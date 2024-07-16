@@ -31,6 +31,8 @@ public class FinalProduct {
   private String brand;
   private String color;
   private String img;
+  private Long base_product_id;
+  private String name;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "color_variant_product_id", referencedColumnName = "color_variant_product_id")
   @JsonBackReference

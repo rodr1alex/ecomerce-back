@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
+import com.springboot.backend.andres.usersapp.usersbackend.entities.Role;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,10 +47,16 @@ public class UserController {
         return service.findAll();
     }
 
-    @GetMapping("/page/{page}")
-    public Page<User> listPageable(@PathVariable Integer page) {
-        Pageable pageable = PageRequest.of(page, 4);
+    @GetMapping("/page/{page_size}/{page}")
+    public Page<User> listPageable(@PathVariable Integer page_size, @PathVariable Integer page) {
+        Pageable pageable = PageRequest.of(page, page_size);
         return service.findAll(pageable);
+    }
+
+    @PostMapping("/filter/{page_size}/{page}")
+    public Page<User> filter(@PathVariable Integer page_size, @PathVariable Integer page, @RequestBody Role role){
+        Pageable pageable = PageRequest.of(page, page_size);
+        return  this.service.filter(pageable, role);
     }
 
     @GetMapping("/{id}")

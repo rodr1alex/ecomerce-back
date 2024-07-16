@@ -1,9 +1,7 @@
 package com.springboot.backend.andres.usersapp.usersbackend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +22,16 @@ public class Sale {
   @GeneratedValue(strategy = IDENTITY)
   private Long sale_id;
   private LocalDateTime date;
+
+  private String username;
+  private Long user_id;
+  private Integer total;
+  private Integer items;
+  private Long cart_id;
+  private String status;
+
+  @ManyToOne()
+  @JoinColumn(name = "direction_id", referencedColumnName = "direction_id")
+  private Direction direction;
+
 }

@@ -16,6 +16,6 @@ public interface IBaseProductService {
   public Page<BaseProduct> filterByBrand(Long brand_id, Pageable pageable, List<Category> categoryList);
   public Page<BaseProduct> filterByCategoryList(List<Category> categoryList, Pageable pageable);
   public List<Brand> getBrandList(List<Category> categoryList);
-
+  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Category> categoryList);
   //public void associateWithColorVariantProduct(BaseProduct baseProduct, ColorVariantProduct colorVariantProduct);
 }

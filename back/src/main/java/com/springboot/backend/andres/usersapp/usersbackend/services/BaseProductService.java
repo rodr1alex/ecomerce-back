@@ -98,6 +98,60 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
+  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Category> categoryList) {
+    List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
+    if(categoryList.get(0).getCategory_id() > 0){
+      for(Category category: categoryList){
+        System.out.println("Filtrando  por: " + this.categoryService.findById(category.getCategory_id()).getName());
+        baseProductListDB = this.filterByCategory(baseProductListDB, category.getCategory_id());
+      }
+    }
+
+    List<BaseProduct> filtredList = new ArrayList<>();
+    for(BaseProduct baseProductDB: baseProductListDB){
+      if(brand_id > 0){
+        if(Objects.equals(baseProductDB.getBrand().getBrand_id(), brand_id)){
+          filtredList.add(baseProductDB);
+        }
+      }else {
+        filtredList.add(baseProductDB);
+      }
+
+    }
+    //Filtrando por color
+    List<ColorVariantProduct> colorVariantProductListFiltred = new ArrayList<>();
+    for (BaseProduct baseProductDB: filtredList){
+      for(ColorVariantProduct colorVariantProductDB: baseProductDB.getColorVariantProductList()){
+        if(color_id > 0){
+          if(Objects.equals(colorVariantProductDB.getColor().getColor_id(), color_id)){
+            colorVariantProductListFiltred.add(colorVariantProductDB);
+          }
+        }else {
+          colorVariantProductListFiltred.add(colorVariantProductDB);
+        }
+      }
+    }
+
+    //Filtrando por talla
+    List<FinalProduct> finalProductListFiltred = new ArrayList<>();
+    for (ColorVariantProduct colorVariantProductDB: colorVariantProductListFiltred){
+      for(FinalProduct finalProductDB: colorVariantProductDB.getFinalProductList()){
+        if(size_id > 0){
+          if(Objects.equals(finalProductDB.getSize().getSize_id(), size_id)){
+            finalProductListFiltred.add(finalProductDB);
+          }
+        }else{
+          finalProductListFiltred.add(finalProductDB);
+        }
+
+      }
+    }
+
+    return  finalProductListFiltred;
+
+  }
+
+  @Override
   public Page<BaseProduct> filterByCategoryList(List<Category> categoryList, Pageable pageable) {
     List<Brand> brandList = new ArrayList<>();
     List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();

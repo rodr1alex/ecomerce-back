@@ -2,10 +2,13 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +44,32 @@ public class UserServiceImpl implements UserService{
         return this.repository.findAll(pageable);
     }
 
-    @Transactional(readOnly = true)
+  @Override
+  public Page<User> filter(Pageable pageable, Role role) {
+    List<User> userListDB = (List<User>) this.repository.findAll();
+    List<User> filtredUserList = new ArrayList<>();
+    if(role.getId() > 0){
+      if(role.getId() == 1){
+        for(User userDB: userListDB){
+          if (userDB.getRoles().size() == 1){
+            filtredUserList.add(userDB);
+          }
+        }
+      }else {
+        for (User userDB : userListDB) {
+          if (userDB.getRoles().size() == 2) {
+            filtredUserList.add(userDB);
+          }
+        }
+      }
+    }else {
+      filtredUserList = userListDB;
+    }
+
+    return this.convertListToPage(filtredUserList, pageable);
+  }
+
+  @Transactional(readOnly = true)
     @Override
     public Optional<User> findById(@NonNull Long id) {
         return repository.findById(id);
@@ -101,5 +129,22 @@ public class UserServiceImpl implements UserService{
         }
         return roles;
     }
+
+  public  Page<User> convertListToPage(List<User> list, Pageable pageable) {
+    if (list == null || list.isEmpty()) {
+      return new PageImpl<>(List.of(), pageable, 0);
+    }
+
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), list.size());
+
+    if (start > end) {
+      return new PageImpl<>(List.of(), pageable, list.size());
+    }
+
+    List<User> subList = list.subList(start, end);
+    return new PageImpl<>(subList, pageable, list.size());
+  }
+
 
 }

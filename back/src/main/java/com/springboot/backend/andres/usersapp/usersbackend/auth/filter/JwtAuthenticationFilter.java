@@ -1,10 +1,7 @@
 package com.springboot.backend.andres.usersapp.usersbackend.auth.filter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.UserRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.services.UserService;
@@ -38,10 +35,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
     private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
 
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -55,7 +54,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
             username = user.getUsername();
             password = user.getPassword();
-          System.out.println("ID: " + user.getId());
+
+
+          Optional<User> optionalUser = userRepository.findByUsername(username);
+          User userDB = optionalUser.orElseThrow();
+          System.out.println("ID del usuario weon: " + userDB.getId());
+
+
+
         } catch (StreamReadException e) {
             e.printStackTrace();
         } catch (DatabindException e) {
@@ -79,11 +85,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //User usher = this.userRepository.findByUsername(username).get();
         Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
         boolean isAdmin = roles.stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        User userDB = optionalUser.orElseThrow();
+
         Claims claims = Jwts
                 .claims()
                 .add("authorities", new ObjectMapper().writeValueAsString(roles))
                 .add("username", username)
                 .add("isAdmin", isAdmin)
+                .add("user_id",userDB.getId())
                 .build();
 
         String jwt = Jwts.builder()

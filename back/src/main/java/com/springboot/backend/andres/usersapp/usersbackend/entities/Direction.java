@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -27,5 +29,8 @@ public class Direction {
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   @JsonIgnore
   private User user;
+  @OneToMany(mappedBy = "direction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JsonIgnore
+  private List<Sale> saleList;
 
 }

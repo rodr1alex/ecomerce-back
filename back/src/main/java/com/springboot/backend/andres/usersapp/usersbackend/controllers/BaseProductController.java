@@ -21,14 +21,21 @@ public class BaseProductController {
   @Autowired
   private IBaseProductService baseProductService;
 
+
+
   @PostMapping("/create")
   public BaseProduct create(@RequestBody BaseProduct newBaseProduct){
     return this.baseProductService.create(newBaseProduct);
   }
 
+  @GetMapping("/{base_product_id}")
+  public BaseProduct findById(@PathVariable Long base_product_id){
+    return  this.baseProductService.findById(base_product_id);
+  }
+
   @GetMapping("/featured_products/page/{page}")
   public Page<BaseProduct> getFeaturedProducts(@PathVariable Integer page){
-    Pageable pageable = PageRequest.of(page, 10);
+    Pageable pageable = PageRequest.of(page, 40);
     return  this.baseProductService.getFeaturedProducts(pageable);
   }
 
@@ -51,14 +58,14 @@ public class BaseProductController {
 
   @PostMapping("/filter/brand/{brand_id}/page/{page}")
   public Page<BaseProduct> filterByBrand(@PathVariable Long brand_id,@PathVariable Integer page,@RequestBody List<Category> categoryList ){
-    Pageable pageable = PageRequest.of(page, 8);
+    Pageable pageable = PageRequest.of(page, 4);
     return  this.baseProductService.filterByBrand(brand_id, pageable, categoryList);
   }
 
 
   @PostMapping("/filter/category_list/page/{page}")
   public Page<BaseProduct> filterByCategoryList(@RequestBody List<Category> categoryList,@PathVariable Integer page){
-    Pageable pageable = PageRequest.of(page, 8);
+    Pageable pageable = PageRequest.of(page, 2);
     return this.baseProductService.filterByCategoryList(categoryList, pageable);
   }
 
