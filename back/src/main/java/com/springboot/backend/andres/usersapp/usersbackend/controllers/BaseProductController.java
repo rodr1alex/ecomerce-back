@@ -65,7 +65,7 @@ public class BaseProductController {
 
   @PostMapping("/filter/category_list/page/{page}")
   public Page<BaseProduct> filterByCategoryList(@RequestBody List<Category> categoryList,@PathVariable Integer page){
-    Pageable pageable = PageRequest.of(page, 2);
+    Pageable pageable = PageRequest.of(page, 4);
     return this.baseProductService.filterByCategoryList(categoryList, pageable);
   }
 

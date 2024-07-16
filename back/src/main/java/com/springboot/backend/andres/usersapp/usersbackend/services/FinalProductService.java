@@ -30,11 +30,17 @@ public class FinalProductService implements IFinalProductService{
   public FinalProduct create(FinalProduct finalProduct) {
     ColorVariantProduct colorVariantProductDB = this.colorVariantProductService.findById(finalProduct.getColorVariantProduct().getColor_variant_product_id());
     Size sizeDB = this.sizeService.findById(finalProduct.getSize().getSize_id());
+    BaseProduct baseProductDB = this.baseProductRepository.findById(colorVariantProductDB.getBaseProduct().getBase_product_id()).get();
     finalProduct.setColorVariantProduct(colorVariantProductDB);
     finalProduct.setSize(sizeDB);
     finalProduct.setColor(colorVariantProductDB.getColor().getName());
-    finalProduct.setImg(colorVariantProductDB.getColorVariantProductImageList().get(0).getUrl());
-    BaseProduct baseProductDB = this.baseProductRepository.findById(colorVariantProductDB.getBaseProduct().getBase_product_id()).get();
+    if(!colorVariantProductDB.getColorVariantProductImageList().isEmpty()){
+      System.out.println("Estyp donde no deberia estar");
+      finalProduct.setImg(colorVariantProductDB.getColorVariantProductImageList().get(0).getUrl());
+    }else{
+      finalProduct.setImg(baseProductDB.getBaseProductImageList().get(0).getUrl());
+    }
+
     finalProduct.setBrand(baseProductDB.getBrand().getName());
     finalProduct.setBase_product_id(baseProductDB.getBase_product_id());
     finalProduct.setName(baseProductDB.getName());

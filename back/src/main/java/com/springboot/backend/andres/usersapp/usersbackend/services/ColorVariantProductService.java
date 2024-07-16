@@ -8,6 +8,7 @@ import com.springboot.backend.andres.usersapp.usersbackend.repositories.IColorVa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,10 +29,16 @@ public class ColorVariantProductService implements IColorVariantProductService {
     newColorVariantProduct.setBaseProduct(baseProductDB);
     Color colorDB = this.colorService.findById(newColorVariantProduct.getColor().getColor_id());
     newColorVariantProduct.setColor(colorDB);
-    List<ColorVariantProductImage> colorVariantProductImageListDB = this.colorVariantProductImageService.createWithList(newColorVariantProduct.getColorVariantProductImageList());
-    newColorVariantProduct.setColorVariantProductImageList(colorVariantProductImageListDB);
+    List<ColorVariantProductImage> colorVariantProductImageListDB = new ArrayList<>();
+    if(newColorVariantProduct.getColorVariantProductImageList() != null){
+      colorVariantProductImageListDB = this.colorVariantProductImageService.createWithList(newColorVariantProduct.getColorVariantProductImageList());
+      newColorVariantProduct.setColorVariantProductImageList(colorVariantProductImageListDB);
+    }
     ColorVariantProduct colorVariantProductDB = this.colorVariantProductRepository.save(newColorVariantProduct);
-    this.colorVariantProductImageService.associateWithColorVariantProduct(colorVariantProductImageListDB, colorVariantProductDB);
+    if(newColorVariantProduct.getColorVariantProductImageList() != null){
+      this.colorVariantProductImageService.associateWithColorVariantProduct(colorVariantProductImageListDB, colorVariantProductDB);
+    }
+
     //this.baseProductService.associateWithColorVariantProduct(baseProductDB, colorVariantProductDB);
     return colorVariantProductDB;
   }
