@@ -20,6 +20,7 @@ public class OrderedProduct {
   @GeneratedValue(strategy = IDENTITY)
   private Long ordered_product_id;
   private Integer quantity;
+  private Integer originalquantity;
   @ManyToOne()
   @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
   @JsonIgnore

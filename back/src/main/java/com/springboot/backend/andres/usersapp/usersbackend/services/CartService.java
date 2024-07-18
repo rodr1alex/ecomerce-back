@@ -3,8 +3,10 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.FinalProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
+import com.springboot.backend.andres.usersapp.usersbackend.entities.Sale;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.ICartRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.ISaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ public class CartService implements ICartService{
   private UserService userService;
   @Autowired
   private IFinalProductService finalProductService;
+  @Autowired
+  private ISaleRepository saleRepository;
 
   @Override
   public Cart createCart(Long user_id) {
@@ -105,6 +109,8 @@ public class CartService implements ICartService{
     return cartDB;
   }
 
+
+  //METODOS PARA OTROS SERVICES..
   @Override
   public Cart findBySaleId(Long sale_id) {
     List<Cart> cartList = (List<Cart>) this.cartRepository.findAll();
@@ -133,6 +139,19 @@ public class CartService implements ICartService{
     }
     return null;
   }
+
+  @Override
+  public Integer modifyCart(Long cart_id, List<OrderedProduct> orderedProductList){
+    Cart cartDB = this.cartRepository.findById(cart_id).get();
+    for(int i = 0 ; i < orderedProductList.size(); i++){
+      cartDB.getOrderedProductList().get(i).setQuantity(orderedProductList.get(i).getQuantity());
+    }
+    cartDB.setTotal(this.calculateTotal(cartDB.getOrderedProductList()));
+    cartDB.setItems(this.calculateTotalItems(cartDB.getOrderedProductList()));
+    this.cartRepository.save(cartDB);
+    return cartDB.getTotal();
+  }
+
 
 
   //METODOS AUXILIARES

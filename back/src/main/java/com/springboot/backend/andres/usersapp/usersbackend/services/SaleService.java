@@ -42,17 +42,25 @@ public class SaleService implements ISaleService{
   @Override
   public Sale createSale(Long cart_id, Long direction_id, Long user_id) {
     Cart cartDB = this.cartService.findById(cart_id);
-    User userDB = this.userRepository.findById(user_id).get();
     Direction directionDB = this.directionRepository.findById(direction_id).get();
     Sale sale = new Sale();
-    List<OrderedProduct> orderedProductListDB = cartDB.getOrderedProductList();
-    this.finalProductService.reduceInventory(orderedProductListDB);
+    for (OrderedProduct orderedProductDB: cartDB.getOrderedProductList()){       //Asignacion de originalquantity (la que no se modifica nunca)
+      orderedProductDB.setOriginalquantity(orderedProductDB.getQuantity());
+    }
+    List<OrderedProduct> orderedProductToInventoryList = new ArrayList<>();        //Modificacion de inventario
+    for(OrderedProduct orderedProductDB: cartDB.getOrderedProductList()){
+      OrderedProduct orderedProductToInventory = new OrderedProduct();
+      FinalProduct finalProductToInventory = new FinalProduct();
+      finalProductToInventory.setFinal_product_id(orderedProductDB.getFinalProduct().getFinal_product_id());
+      orderedProductToInventory.setQuantity(orderedProductDB.getQuantity() * -1);
+      orderedProductToInventory.setFinalProduct(finalProductToInventory);
+      orderedProductToInventoryList.add(orderedProductToInventory);
+    }
+    this.finalProductService.modifyInventory(orderedProductToInventoryList);
+
     sale.setDate(LocalDateTime.now());
     sale.setDirection(directionDB);
-    sale.setTotal(cartDB.getTotal());
-    sale.setItems(cartDB.getItems());
     sale.setCart_id(cart_id);
-    sale.setUsername(userDB.getUsername());
     sale.setUser_id(user_id);
     sale.setStatus("Realizada");
     sale = this.saleRepository.save(sale);
@@ -62,60 +70,41 @@ public class SaleService implements ISaleService{
   }
 
   @Override
-  public Cart returnProduct(OrderedProduct orderedProduct, Long sale_id) {
+  public String modifySale(Long sale_id, List<OrderedProduct> orderedProductList) {
     Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartDB = this.cartService.findBySaleId(sale_id);
-    OrderedProduct orderedProductOriginal = this.cartService.findOrderedProduct(orderedProduct.getFinalProduct().getFinal_product_id(), cartDB.getCart_id());
-    Integer differential =orderedProduct.getQuantity() - orderedProductOriginal.getQuantity();
-    this.cartService.UpdateProductQuantity(orderedProduct,cartDB.getCart_id());
-    orderedProduct.setQuantity(differential);
-    List<OrderedProduct> orderedProductList = new ArrayList<>();
-    orderedProductList.add(orderedProduct);
-    this.finalProductService.reduceInventory(orderedProductList);
-    saleDB.setTotal(cartDB.getTotal());
-    saleDB.setItems(cartDB.getItems());
-    saleDB.setStatus("Modificada");
-    this.saleRepository.save(saleDB);
-    return cartDB;
-  }
+    Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+    Integer originalTotal = cartDB.getTotal();
+    Integer originalItems = cartDB.getItems();
+    Integer cartTotal;
 
-  @Override
-  public Cart removeProduct(Long final_product_id, Long sale_id) {
-    Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartDB = this.cartService.findBySaleId(sale_id);
-    OrderedProduct orderedProductOriginal = this.cartService.findOrderedProduct(final_product_id, cartDB.getCart_id());
-    OrderedProduct orderedProductCopy = new OrderedProduct();
-    orderedProductCopy.setQuantity(orderedProductOriginal.getQuantity() * -1);
-    orderedProductCopy.setFinalProduct(orderedProductOriginal.getFinalProduct());
-    this.cartService.removeProduct(final_product_id, cartDB.getCart_id());
-    List<OrderedProduct> orderedProductList = new ArrayList<>();
-    orderedProductList.add(orderedProductCopy);
-    this.finalProductService.reduceInventory(orderedProductList);
-    saleDB.setTotal(cartDB.getTotal());
-    saleDB.setItems(cartDB.getItems());
-    saleDB.setStatus("Modificada");
-    this.saleRepository.save(saleDB);
-    return cartDB;
-  }
-
-  @Override
-  public void cancelSale(Long sale_id) {
-    Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartDB = this.cartService.findBySaleId(sale_id);
-    List<OrderedProduct> orderedProductListDB = cartDB.getOrderedProductList();
-    List<OrderedProduct> orderedProductListCopy = new ArrayList<>();
-    for(OrderedProduct orderedProductDB: orderedProductListDB){
-      OrderedProduct orderedProductCopy = new OrderedProduct();
-      orderedProductCopy.setQuantity(orderedProductDB.getQuantity() * -1);
-      orderedProductCopy.setFinalProduct(orderedProductDB.getFinalProduct());
-      orderedProductListCopy.add(orderedProductCopy);
+    //modificar inventario (restituir)...OK
+    List<OrderedProduct> orderedProductToInventoryList = new ArrayList<>();
+    for(int i = 0; i < orderedProductList.size(); i++){
+      Integer diferential = cartDB.getOrderedProductList().get(i).getQuantity() - orderedProductList.get(i).getQuantity();
+      System.out.println("Diferential para indice i:" + i + " diferential: " + diferential);
+      OrderedProduct orderedProductToInventory = new OrderedProduct();
+      FinalProduct finalProductToInventory = new FinalProduct();
+      finalProductToInventory.setFinal_product_id(orderedProductList.get(i).getFinalProduct().getFinal_product_id());
+      orderedProductToInventory.setQuantity(diferential);
+      orderedProductToInventory.setFinalProduct(finalProductToInventory);
+      orderedProductToInventoryList.add(orderedProductToInventory);
     }
-    this.cartService.cleanCart(cartDB.getCart_id());
-    this.finalProductService.reduceInventory(orderedProductListCopy);
-    saleDB.setTotal(cartDB.getTotal());
-    saleDB.setItems(cartDB.getItems());
-    saleDB.setStatus("Anulada");
-    this.saleRepository.save(saleDB);
+    this.finalProductService.modifyInventory(orderedProductToInventoryList);
+
+    //modificar carrito
+    cartTotal = this.cartService.modifyCart(saleDB.getCart_id(), orderedProductList);
+
+    if(Objects.equals(cartTotal, 0)){
+      saleDB.setStatus("Anulada");
+      this.saleRepository.save(saleDB);
+      return "Venta anulada con exito \n Productos devueltos: " + (originalItems - cartDB.getItems()) + "\n Dinero retornado: " + (originalTotal - cartDB.getTotal());
+    }else{
+      saleDB.setStatus("Modificada");
+      this.saleRepository.save(saleDB);
+      return "Venta modificada con exito \n Productos devueltos: " + (originalItems - cartDB.getItems()) + "\n Dinero retornado: " + (originalTotal - cartDB.getTotal());
+
+    }
+
   }
 
   @Override
@@ -136,8 +125,9 @@ public class SaleService implements ISaleService{
     List<Sale> filtredByTotal = new ArrayList<>();
     if(endTotal > 0){
       for(Sale saleDB: filtredByUser){
-        if(saleDB.getTotal() != null) {
-          if ((saleDB.getTotal() >= startTotal) && (saleDB.getTotal() <= endTotal)) {
+        Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+        if(cartDB.getTotal() != null) {
+          if ((cartDB.getTotal() >= startTotal) && (cartDB.getTotal() <= endTotal)) {
             filtredByTotal.add(saleDB);
           }
         }
@@ -145,13 +135,12 @@ public class SaleService implements ISaleService{
     }else {
       filtredByTotal = filtredByUser;
     }
-
     //Filtrando por fecha...... por implementar.
-
     return this.convertListToPage(filtredByTotal, pageable);
   }
 
 
+  //Metodos auxiliares
   public  Page<Sale> convertListToPage(List<Sale> list, Pageable pageable) {
     if (list == null || list.isEmpty()) {
       return new PageImpl<>(List.of(), pageable, 0);
@@ -168,4 +157,74 @@ public class SaleService implements ISaleService{
     return new PageImpl<>(subList, pageable, list.size());
   }
 
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+  @Override
+  public Cart returnProduct(OrderedProduct orderedProduct, Long sale_id) {
+    Sale saleDB = this.saleRepository.findById(sale_id).get();
+    Cart cartDB = this.cartService.findBySaleId(sale_id);
+    OrderedProduct orderedProductOriginal = this.cartService.findOrderedProduct(orderedProduct.getFinalProduct().getFinal_product_id(), cartDB.getCart_id());
+    Integer differential =orderedProduct.getQuantity() - orderedProductOriginal.getQuantity();
+    this.cartService.UpdateProductQuantity(orderedProduct,cartDB.getCart_id()); //MODIFICAR CARRITO
+    orderedProduct.setQuantity(differential);
+    List<OrderedProduct> orderedProductList = new ArrayList<>();
+    orderedProductList.add(orderedProduct);
+    this.finalProductService.modifyInventory(orderedProductList); // metodo modifyInventory cambio... reviar si se requiere este metodo
+    this.saleRepository.save(saleDB);
+    return cartDB;
+  }
+
+  @Override
+  public Cart removeProduct(Long final_product_id, Long sale_id) {
+    Sale saleDB = this.saleRepository.findById(sale_id).get();
+    Cart cartDB = this.cartService.findBySaleId(sale_id);
+    OrderedProduct orderedProductOriginal = this.cartService.findOrderedProduct(final_product_id, cartDB.getCart_id());
+    OrderedProduct orderedProductCopy = new OrderedProduct();
+    orderedProductCopy.setQuantity(orderedProductOriginal.getQuantity() * -1);
+    orderedProductCopy.setFinalProduct(orderedProductOriginal.getFinalProduct());
+    this.cartService.removeProduct(final_product_id, cartDB.getCart_id());
+    List<OrderedProduct> orderedProductList = new ArrayList<>();
+    orderedProductList.add(orderedProductCopy);
+    this.finalProductService.modifyInventory(orderedProductList); //metodo modifyInventory cambio... reviar si se requiere este metodo
+    saleDB.setStatus("Modificada");
+    this.saleRepository.save(saleDB);
+    return cartDB;
+  }
+
+  @Override
+  public void cancelSale(Long sale_id) {
+    Sale saleDB = this.saleRepository.findById(sale_id).get();
+    Cart cartDB = this.cartService.findBySaleId(sale_id);
+    List<OrderedProduct> orderedProductListDB = cartDB.getOrderedProductList();
+    List<OrderedProduct> orderedProductListCopy = new ArrayList<>();
+    for(OrderedProduct orderedProductDB: orderedProductListDB){
+      OrderedProduct orderedProductCopy = new OrderedProduct();
+      orderedProductCopy.setQuantity(orderedProductDB.getQuantity() * -1);
+      orderedProductCopy.setFinalProduct(orderedProductDB.getFinalProduct());
+      orderedProductListCopy.add(orderedProductCopy);
+    }
+    this.cartService.cleanCart(cartDB.getCart_id());
+    this.finalProductService.modifyInventory(orderedProductListCopy); //metodo modifyInventory cambio... reviar si se requiere este metodo
+    saleDB.setStatus("Anulada");
+    this.saleRepository.save(saleDB);
+  }*/
+
+

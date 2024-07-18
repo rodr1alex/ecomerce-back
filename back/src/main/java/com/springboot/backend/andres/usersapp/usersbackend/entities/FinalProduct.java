@@ -25,14 +25,11 @@ public class FinalProduct {
   private Long final_product_id;
   private Integer stock;
   private Integer final_price;
-  private String final_description;
-  private String final_chars;
-  private String final_specs;
-  private String brand;
-  private String color;
   private String img;
   private Long base_product_id;
-  private String name;
+  private String name;  // al actualizar base_product
+  private String brand; // al actualizar base_product
+  private String color; //, al actualizar color_variant_product
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "color_variant_product_id", referencedColumnName = "color_variant_product_id")
   @JsonBackReference

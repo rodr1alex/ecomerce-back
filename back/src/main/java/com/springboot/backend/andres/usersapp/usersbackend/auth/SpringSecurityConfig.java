@@ -56,8 +56,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/users/{id}").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/users/directions/update/{direction_id}", "/cart/update/add_product/{cart_id}",
                   "/cart/update/remove_product/{cart_id}/{final_product_id}","/cart/update/quantity_product/{cart_id}",
-                  "/cart/update/clean/{cart_id}", "/sales/update/quantity_product/{sale_id}", "/sales/update/remove_product/{sale_id}/{final_product_id}",
-                  "/sale/update/cancel_sale/{sale_id}", "/users/{id}", "/users/update_password/{id}").hasAnyRole("USER", "ADMIN")
+                  "/cart/update/clean/{cart_id}", "/users/{id}", "/users/update_password/{id}").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/directions/delete/{direction_id}").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST,  "/categories/create", "/brands/create", "/colors/create", "/sizes/create",
                   "/base_products/create", "/color_variant_products/create", "/final_products/create",
@@ -70,7 +69,8 @@ public class SpringSecurityConfig {
                   "/sizes/update/{size_id}", "/base_product/update/{base_product_id}", "/base_product/update/add_image/{base_product_id}",
                   "/base_product/update/remove_image/{base_product_id}", "/color_variant_products/update/{color_variant_product_id}",
                   "/color_variant_products/update/add_image/{color_variant_product_id}",
-                  "/color_variant_products/update/remove_image/{color_variant_product_id}", "/final_products/update/{final_product_id}").hasRole("ADMIN")
+                  "/color_variant_products/update/remove_image/{color_variant_product_id}", "/final_products/update/{final_product_id}",
+                  "/sales/modify/{sale_id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN")
                 .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(configurationSource()))

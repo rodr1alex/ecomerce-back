@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @CrossOrigin(origins={"http://localhost:4200"})
 @RestController
@@ -59,27 +60,10 @@ public class SaleController {
       .body(this.finalProductService.verifyInventory(cartDB.getOrderedProductList()));
   }
 
-  @PutMapping("/update/quantity_product/{sale_id}")
-  private ResponseEntity<?> returnProduct(@RequestBody OrderedProduct orderedProduct,@PathVariable Long sale_id){
-    Cart cartDB = this.cartService.findBySaleId(sale_id);
-    OrderedProduct orderedProductOriginal = this.cartService.findOrderedProduct(orderedProduct.getFinalProduct().getFinal_product_id(), cartDB.getCart_id());
-    if(orderedProduct.getQuantity() < orderedProductOriginal.getQuantity()){
-      return ResponseEntity.status(HttpStatus.OK).body(this.saleService.returnProduct(orderedProduct, sale_id));
-    }else {
-      return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body("Solo se pueden devolver productos");
-    }
+  @PutMapping("/modify/{sale_id}")
+  private void modify(@PathVariable Long sale_id,@RequestBody List<OrderedProduct> orderedProductList){
+     this.saleService.modifySale(sale_id, orderedProductList);
   }
 
-  @PutMapping("/update/remove_product/{sale_id}/{final_product_id}")
-  private Cart removeProduct(@PathVariable Long final_product_id,@PathVariable Long sale_id){
-    return this.saleService.removeProduct(final_product_id, sale_id);
-  }
-
-  @PutMapping("/update/cancel_sale/{sale_id}")
-  private ResponseEntity<?> cancelSale(@PathVariable Long sale_id){
-    this.saleService.cancelSale(sale_id);
-    return ResponseEntity.status(HttpStatus.OK).body("Venta cancelada con exito");
-  }
 
 }

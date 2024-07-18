@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FinalProductService implements IFinalProductService{
@@ -33,31 +34,23 @@ public class FinalProductService implements IFinalProductService{
     BaseProduct baseProductDB = this.baseProductRepository.findById(colorVariantProductDB.getBaseProduct().getBase_product_id()).get();
     finalProduct.setColorVariantProduct(colorVariantProductDB);
     finalProduct.setSize(sizeDB);
+    finalProduct.setName(baseProductDB.getName());
+    finalProduct.setBrand(baseProductDB.getBrand().getName());
     finalProduct.setColor(colorVariantProductDB.getColor().getName());
+    finalProduct.setBase_product_id(baseProductDB.getBase_product_id());
     if(!colorVariantProductDB.getColorVariantProductImageList().isEmpty()){
-      System.out.println("Estyp donde no deberia estar");
       finalProduct.setImg(colorVariantProductDB.getColorVariantProductImageList().get(0).getUrl());
     }else{
       finalProduct.setImg(baseProductDB.getBaseProductImageList().get(0).getUrl());
     }
-
-    finalProduct.setBrand(baseProductDB.getBrand().getName());
-    finalProduct.setBase_product_id(baseProductDB.getBase_product_id());
-    finalProduct.setName(baseProductDB.getName());
+    //Si es que el final_price en null
     if(finalProduct.getFinal_price() == null){
       finalProduct.setFinal_price(baseProductDB.getBase_price());
     }
-    if(finalProduct.getFinal_description() == null){
-      finalProduct.setFinal_description(baseProductDB.getDescription());
-    }
-    if(finalProduct.getFinal_chars() == null){
-      finalProduct.setFinal_chars(baseProductDB.getChars());
-    }
-    if(finalProduct.getFinal_specs() == null){
-      finalProduct.setFinal_specs(baseProductDB.getSpecs());
-    }
     return this.finalProductRepository.save(finalProduct);
   }
+
+
 
   @Override
   public Page<FinalProduct> findAll(Pageable pageable) {
@@ -90,10 +83,10 @@ public class FinalProductService implements IFinalProductService{
   }
 
   @Override
-  public void reduceInventory(List<OrderedProduct> orderedProductList) {
+  public void modifyInventory(List<OrderedProduct> orderedProductList) {
     for (OrderedProduct orderedProduct: orderedProductList){
       FinalProduct finalProductDB = this.findById(orderedProduct.getFinalProduct().getFinal_product_id());
-      finalProductDB.setStock(finalProductDB.getStock() - orderedProduct.getQuantity());
+        finalProductDB.setStock(finalProductDB.getStock() + orderedProduct.getQuantity()); //trabaja con diferencial standart
       this.finalProductRepository.save(finalProductDB);
     }
   }
