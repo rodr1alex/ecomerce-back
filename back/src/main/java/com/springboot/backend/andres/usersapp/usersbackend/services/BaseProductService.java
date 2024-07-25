@@ -2,6 +2,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,6 +23,8 @@ public class BaseProductService implements IBaseProductService{
   private IBaseProductImageService baseProductImageService;
   @Autowired
   private ICategoryService categoryService;
+  @Autowired
+  private IFinalProductRepository finalProductRepository;
 
   @Override
   public BaseProduct create(BaseProduct newBaseProduct) {
@@ -34,6 +37,7 @@ public class BaseProductService implements IBaseProductService{
     BaseProduct baseProductDB = this.baseProductRepository.save(newBaseProduct);
     this.baseProductImageService.associateWithBaseProduct(baseProductImageListDB, baseProductDB);
     this.brandService.associateWithBaseProduct(brandDB, baseProductDB);
+
     return baseProductDB;
   }
 
@@ -59,9 +63,20 @@ public class BaseProductService implements IBaseProductService{
     baseProductDB.setCategoryList(categoryListDB);
     baseProductDB.setName(updatedBaseProduct.getName());
     baseProductDB.setBase_price(updatedBaseProduct.getBase_price());
-    baseProductDB.setDescription(updatedBaseProduct.getDescription());
     baseProductDB.setChars(updatedBaseProduct.getChars());
     baseProductDB.setSpecs(updatedBaseProduct.getSpecs());
+
+    //actualizar finalProducts...
+    List<FinalProduct> finalProductListDB = (List<FinalProduct>) this.finalProductRepository.findAll();
+    for(FinalProduct finalProductDB: finalProductListDB){
+      if(Objects.equals(finalProductDB.getBase_product_id(), base_product_id)){
+        finalProductDB.setBrand(baseProductDB.getBrand().getName());
+        finalProductDB.setName(baseProductDB.getName());
+        //  MUY IMPORTANTE FALTA ACTUALIZAR PRECIOS!!
+        this.finalProductRepository.save(finalProductDB);
+      }
+    }
+
     return this.baseProductRepository.save(baseProductDB);
   }
 

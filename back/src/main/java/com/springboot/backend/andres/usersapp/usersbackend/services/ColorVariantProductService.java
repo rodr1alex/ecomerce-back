@@ -1,15 +1,14 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
-import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.Color;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.ColorVariantProduct;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.ColorVariantProductImage;
+import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IColorVariantProductRepository;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ColorVariantProductService implements IColorVariantProductService {
@@ -21,6 +20,8 @@ public class ColorVariantProductService implements IColorVariantProductService {
   private IColorService colorService;
   @Autowired
   private IColorVariantProductImageService colorVariantProductImageService;
+  @Autowired
+  private IFinalProductRepository finalProductRepository;
 
   @Override
   public ColorVariantProduct create(ColorVariantProduct newColorVariantProduct) {
@@ -53,6 +54,15 @@ public class ColorVariantProductService implements IColorVariantProductService {
     ColorVariantProduct colorVariantProductDB  = this.colorVariantProductRepository.findById(color_variant_product_id).get();
     colorVariantProductDB.setColor(this.colorService.findById(colorVariantProduct.getColor().getColor_id()));
     //colorVariantProductDB.setBaseProduct(this.baseProductService.findById(colorVariantProduct.getBaseProduct().getBase_product_id()));
+
+    //actualizar color del final product
+    List<FinalProduct> finalProductListDB = (List<FinalProduct>) this.finalProductRepository.findAll();
+    for(FinalProduct finalProductDB: finalProductListDB){
+      if(Objects.equals(finalProductDB.getColorVariantProduct().getColor_variant_product_id(), color_variant_product_id)){
+        finalProductDB.setColor(this.colorService.findById(colorVariantProduct.getColor().getColor_id()).getName());
+        this.finalProductRepository.save(finalProductDB);
+      }
+    }
     return this.colorVariantProductRepository.save(colorVariantProductDB);
   }
 

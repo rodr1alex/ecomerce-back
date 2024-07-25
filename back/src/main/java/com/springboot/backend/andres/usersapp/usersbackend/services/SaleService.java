@@ -43,6 +43,7 @@ public class SaleService implements ISaleService{
   public Sale createSale(Long cart_id, Long direction_id, Long user_id) {
     Cart cartDB = this.cartService.findById(cart_id);
     Direction directionDB = this.directionRepository.findById(direction_id).get();
+    User userDB = this.userRepository.findById(user_id).get();
     Sale sale = new Sale();
     for (OrderedProduct orderedProductDB: cartDB.getOrderedProductList()){       //Asignacion de originalquantity (la que no se modifica nunca)
       orderedProductDB.setOriginalquantity(orderedProductDB.getQuantity());
@@ -64,6 +65,7 @@ public class SaleService implements ISaleService{
     sale.setUser_id(user_id);
     sale.setStatus("Realizada");
     sale = this.saleRepository.save(sale);
+    sale.setUsername(userDB.getUsername());
     cartDB.setSale(sale);
     this.cartService.saveCart(cartDB);
     return sale;
@@ -108,7 +110,7 @@ public class SaleService implements ISaleService{
   }
 
   @Override
-  public Page<Sale> filter(Pageable pageable, Long user_id, Date startDate, Date endDate, Integer startTotal, Integer endTotal) {
+  public Page<Sale> filter(Pageable pageable, Long user_id, Date startDate, Date endDate, Integer startTotal, Integer endTotal, String status) {
     List<Sale> saleListDB = (List<Sale>) this.saleRepository.findAll();
     List<Sale> filtredByUser = new ArrayList<>();
     if(user_id > 0){
@@ -135,8 +137,24 @@ public class SaleService implements ISaleService{
     }else {
       filtredByTotal = filtredByUser;
     }
+
+    //Filtrando por status
+    List<Sale> filtredByStatus = new ArrayList<>();
+    System.out.println("Que es esta mieda de status: " + status);
+    if(Objects.equals(status, "Estado")){
+      System.out.println("Deberia estar aqui filtando la wea de mierda");
+      filtredByStatus = filtredByTotal;
+    }else{
+      System.out.println("Esta donde no deberia estar");
+      for(Sale saleDB: filtredByTotal){
+        if(Objects.equals(saleDB.getStatus(), status)){
+          filtredByStatus.add(saleDB);
+        }
+      }
+    }
+
     //Filtrando por fecha...... por implementar.
-    return this.convertListToPage(filtredByTotal, pageable);
+    return this.convertListToPage(filtredByStatus, pageable);
   }
 
 

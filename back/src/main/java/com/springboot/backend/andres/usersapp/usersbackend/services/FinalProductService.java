@@ -66,7 +66,8 @@ public class FinalProductService implements IFinalProductService{
   @Override
   public FinalProduct update(FinalProduct finalProduct, Long final_product_id) {
     FinalProduct finalProductDB = this.finalProductRepository.findById(final_product_id).get();
-    finalProductDB.setSize(this.sizeService.findById(finalProduct.getSize().getSize_id()));
+    //finalProductDB.setSize(this.sizeService.findById(finalProduct.getSize().getSize_id()));
+    finalProductDB.setStock(finalProduct.getStock());
     return this.finalProductRepository.save(finalProductDB);
   }
 

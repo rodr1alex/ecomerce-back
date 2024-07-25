@@ -9,6 +9,7 @@ public interface ICartService {
   public Cart createCart(Long user_id);
   public Cart saveCart(Cart cart);
   public Cart findById(Long cart_id);
+  public List<Cart> findAll();
   public Integer modifyCart(Long cart_id, List<OrderedProduct> orderedProductList);
   public Cart addProduct(OrderedProduct orderedProduct, Long cart_id);
   public Cart removeProduct(Long final_product_id, Long cart_id);

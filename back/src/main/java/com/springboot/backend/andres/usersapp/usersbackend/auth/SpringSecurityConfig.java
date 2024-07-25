@@ -64,10 +64,11 @@ public class SpringSecurityConfig {
                   "/users/filter/{page_size}/{page}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/categories", "/categories/{category_id}", "/brands", "/brands/{brand_id}", "/colors", "/colors/{color_id}",
                   "/sizes", "/sizes/{size_id}", "/final_products/{size}/{page}", "/sales/{pageSize}/{page}",
-                  "/sales/filter/{user_id}/{startTotal}/{endTotal}/{pageSize}/{page}", "/sales/{sale_id}").hasRole("ADMIN")
+                  "/sales/filter/{user_id}/{startTotal}/{endTotal}/{pageSize}/{page}/{status}", "/sales/{sale_id}"
+                  , "/cart/{cart_id}", "/cart").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/categories/update/{category_id}", "/brands/update/{brand_id}", "/colors/update/{color_id}",
-                  "/sizes/update/{size_id}", "/base_product/update/{base_product_id}", "/base_product/update/add_image/{base_product_id}",
-                  "/base_product/update/remove_image/{base_product_id}", "/color_variant_products/update/{color_variant_product_id}",
+                  "/sizes/update/{size_id}", "/base_products/update/{base_product_id}", "/base_products/update/add_image/{base_product_id}",
+                  "/base_products/update/remove_image/{base_product_id}", "/color_variant_products/update/{color_variant_product_id}",
                   "/color_variant_products/update/add_image/{color_variant_product_id}",
                   "/color_variant_products/update/remove_image/{color_variant_product_id}", "/final_products/update/{final_product_id}",
                   "/sales/modify/{sale_id}").hasRole("ADMIN")

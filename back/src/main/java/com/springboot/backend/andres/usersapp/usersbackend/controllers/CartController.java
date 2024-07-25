@@ -6,6 +6,8 @@ import com.springboot.backend.andres.usersapp.usersbackend.services.ICartService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins={"http://localhost:4200"})
 @RestController
 @RequestMapping("/cart")
@@ -16,6 +18,16 @@ public class CartController {
   @PostMapping("/create/{user_id}")
   public Cart createCart(@PathVariable Long user_id){
     return this.cartService.createCart(user_id);
+  }
+
+  @GetMapping("/{cart_id}")
+  public Cart findById(@PathVariable Long cart_id){
+    return  this.cartService.findById(cart_id);
+  }
+
+  @GetMapping("")
+  public List<Cart> findAll(){
+    return this.cartService.findAll();
   }
 
   @PutMapping("/update/add_product/{cart_id}")

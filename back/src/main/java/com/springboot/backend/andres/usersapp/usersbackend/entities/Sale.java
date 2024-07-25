@@ -25,6 +25,7 @@ public class Sale {
   private Long user_id;
   private Long cart_id;
   private String status;
+  private String username;
   @ManyToOne()
   @JoinColumn(name = "direction_id", referencedColumnName = "direction_id")
   private Direction direction;

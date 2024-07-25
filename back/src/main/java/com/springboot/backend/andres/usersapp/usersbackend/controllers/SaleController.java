@@ -42,12 +42,12 @@ public class SaleController {
     return this.saleService.findAll(pageable);
   }
 
-  @GetMapping("/filter/{user_id}/{startTotal}/{endTotal}/{pageSize}/{page}")
-  private Page<Sale> filter(@PathVariable Long user_id,@PathVariable Integer startTotal,@PathVariable Integer endTotal,@PathVariable Integer pageSize,@PathVariable Integer page){
+  @GetMapping("/filter/{user_id}/{startTotal}/{endTotal}/{pageSize}/{page}/{status}")
+  private Page<Sale> filter(@PathVariable Long user_id,@PathVariable Integer startTotal,@PathVariable Integer endTotal,@PathVariable Integer pageSize,@PathVariable Integer page, @PathVariable String status){
     Date startDate = new Date();
     Date endDate = new Date();
     Pageable pageable = PageRequest.of(page, pageSize);
-    return this.saleService.filter(pageable, user_id, startDate, endDate, startTotal, endTotal);
+    return this.saleService.filter(pageable, user_id, startDate, endDate, startTotal, endTotal, status);
   }
 
   @PostMapping("/create/{cart_id}/{user_id}")

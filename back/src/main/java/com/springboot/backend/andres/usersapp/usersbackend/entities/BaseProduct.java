@@ -27,7 +27,6 @@ public class BaseProduct {
   private Long base_product_id;
   private String name;
   private Integer base_price;
-  private String description;
   private String chars;
   private String specs;
   @ManyToOne()

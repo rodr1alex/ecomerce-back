@@ -17,6 +17,6 @@ public interface ISaleService {
  // public Cart returnProduct(OrderedProduct orderedProduct, Long sale_id);
  // public Cart removeProduct(Long final_product_id, Long sale_id);
  // public void cancelSale(Long sale_id);
-  public Page<Sale> filter(Pageable pageable, Long user_id, Date startDate, Date endDate, Integer startTotal, Integer endTotal);
+  public Page<Sale> filter(Pageable pageable, Long user_id, Date startDate, Date endDate, Integer startTotal, Integer endTotal, String status);
 
 }

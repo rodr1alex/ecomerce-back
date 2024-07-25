@@ -46,6 +46,11 @@ public class CartService implements ICartService{
   }
 
   @Override
+  public List<Cart> findAll() {
+    return (List<Cart>) this.cartRepository.findAll();
+  }
+
+  @Override
   public Cart addProduct(OrderedProduct orderedProduct, Long cart_id) {
     Cart cartDB = this.cartRepository.findById(cart_id).get();
     OrderedProduct orderedProductDB = this.orderedProductService.createOrderedProduct(orderedProduct, cart_id);
