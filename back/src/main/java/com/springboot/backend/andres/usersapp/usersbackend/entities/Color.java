@@ -21,9 +21,13 @@ public class Color {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long color_id;
+
   private String name;
+
   private String tailwindclass;
+
+  private String hex_code_color;
+
   @OneToMany(mappedBy = "color", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnore
   private List<ColorVariantProduct> colorVariantProductList;
 }

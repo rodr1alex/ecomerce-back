@@ -19,9 +19,10 @@ public class BaseProductImage {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long base_product_image_id;
+
   private String url;
-  @ManyToOne()
-  @JoinColumn(name = "base_product_id", referencedColumnName = "base_product_id")
-  @JsonIgnore
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "base_product_id")
   private BaseProduct baseProduct;
 }

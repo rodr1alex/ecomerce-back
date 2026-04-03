@@ -23,9 +23,10 @@ public class Brand {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long brand_id;
+
   private String name;
-  @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIgnore
+
+  @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<BaseProduct> baseProductList;
 
 }

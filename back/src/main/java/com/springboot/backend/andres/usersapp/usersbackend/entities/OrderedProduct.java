@@ -19,23 +19,21 @@ public class OrderedProduct {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long ordered_product_id;
+
   private Integer quantity;
-  private Integer originalquantity;
-  @ManyToOne()
-  @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
-  @JsonIgnore
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cart_id")
   private Cart cart;
-  @ManyToOne()
-  @JoinColumn(name = "final_product_id", referencedColumnName = "final_product_id")
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "final_product_id")
   private FinalProduct finalProduct;
 
-  @Override
-  public String toString() {
-    return "OrderedProduct{" +
-      "ordered_product_id=" + ordered_product_id +
-      ", quantity=" + quantity +
-      ", cart=" + cart +
-      ", finalProduct=" + finalProduct +
-      '}';
-  }
+  private Integer originalquantity;
+
+  private Integer price_at_purchase;
+
+
+
 }

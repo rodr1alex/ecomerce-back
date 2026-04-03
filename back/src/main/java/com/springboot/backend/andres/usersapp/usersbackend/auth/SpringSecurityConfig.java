@@ -46,7 +46,7 @@ public class SpringSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http.authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.GET, "/base_products/featured_products/page/{page}","/base_products/{base_product_id}","/banner_images", "/users",
+                .requestMatchers(HttpMethod.GET, "/base_products","/base_products/featured_products/page/{page}","/base_products/{base_product_id}","/banner_images", "/users",
                   "/users/{id}", "/users/baseproducts", "/users/baseproducts/{id}", "/users/page/{page_size}/{page}"
                   ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/users", "/base_products/filter/category_list/page/{page}", "/base_products/filter/brand/{brand_id}/page/{page}",

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -19,9 +20,10 @@ public class ColorVariantProductImage {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long color_variant_product_image_id;
+
   private String url;
-  @ManyToOne()
-  @JoinColumn(name = "color_variant_product_id", referencedColumnName = "color_variant_product_id")
-  @JsonIgnore
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "color_variant_product_id")
   private ColorVariantProduct colorVariantProduct;
 }

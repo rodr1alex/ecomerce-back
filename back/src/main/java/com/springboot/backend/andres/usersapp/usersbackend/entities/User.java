@@ -54,8 +54,10 @@ public class User implements IUser {
         uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "role_id"})}
     )
     private List<Role> roles;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cart> cartList;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Direction> directionList;
 

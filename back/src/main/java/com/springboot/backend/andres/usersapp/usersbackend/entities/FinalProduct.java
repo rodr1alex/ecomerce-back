@@ -23,21 +23,21 @@ public class FinalProduct {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long final_product_id;
+
   private Integer stock;
+
   private Integer final_price;
-  private String img;
-  private Long base_product_id;
-  private String name;  // al actualizar base_product
-  private String brand; // al actualizar base_product
-  private String color; //, al actualizar color_variant_product
+
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "color_variant_product_id", referencedColumnName = "color_variant_product_id")
-  @JsonBackReference
+  @JoinColumn(name = "color_variant_product_id")
   private ColorVariantProduct colorVariantProduct;
-  @ManyToOne()
-  @JoinColumn(name = "size_id", referencedColumnName = "size_id")
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "size_id")
   private Size size;
+
+  private String img;
+
   @OneToMany(mappedBy = "finalProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnore
   private List<OrderedProduct> orderedProductList;
 }

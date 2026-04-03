@@ -21,8 +21,9 @@ public class Size {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long size_id;
+
   private String name;
+
   @OneToMany(mappedBy = "size", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnore
   private List<FinalProduct> finalProductList;
 }

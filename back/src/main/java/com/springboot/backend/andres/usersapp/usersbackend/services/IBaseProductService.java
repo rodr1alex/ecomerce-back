@@ -1,5 +1,7 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BaseProductInfo;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetail;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +20,7 @@ public interface IBaseProductService {
   public List<Brand> getBrandList(List<Category> categoryList);
   public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Category> categoryList);
   //public void associateWithColorVariantProduct(BaseProduct baseProduct, ColorVariantProduct colorVariantProduct);
+
+  public  List<BaseProductInfo> findAllProductsCommerce();
+  public ProductDetail getProductDetail(Long id);
 }

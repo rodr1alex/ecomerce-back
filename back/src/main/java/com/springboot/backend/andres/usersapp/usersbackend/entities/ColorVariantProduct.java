@@ -20,31 +20,25 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "color_variant_products")
 public class ColorVariantProduct {
+
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long color_variant_product_id;
+
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "base_product_id", referencedColumnName = "base_product_id")
-  @JsonBackReference
+  @JoinColumn(name = "base_product_id")
   private BaseProduct baseProduct;
-  @ManyToOne()
-  @JoinColumn(name = "color_id", referencedColumnName = "color_id")
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "color_id")
   private Color color;
+
   @OneToMany(mappedBy = "colorVariantProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<ColorVariantProductImage> colorVariantProductImageList;
-  @OneToMany(mappedBy = "colorVariantProduct", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonManagedReference
+
+  @OneToMany(mappedBy = "colorVariantProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<FinalProduct> finalProductList;
 
 
-  @Override
-  public String toString() {
-    return "ColorVariantProduct{" +
-      "color_variant_product_id=" + color_variant_product_id +
-      ", baseProduct=" + baseProduct +
-      ", color=" + color +
-      ", colorVariantProductImageList=" + colorVariantProductImageList +
-      ", finalProductList=" + finalProductList +
-      '}';
-  }
+
 }

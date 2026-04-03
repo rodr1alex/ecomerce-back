@@ -1,6 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.Color;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class BaseProductService implements IBaseProductService{
@@ -29,11 +33,12 @@ public class BaseProductService implements IBaseProductService{
   @Override
   public BaseProduct create(BaseProduct newBaseProduct) {
     Brand brandDB = this.brandService.findById(newBaseProduct.getBrand().getBrand_id());
-    List<Category> categoryListDB  = this.categoryService.findByList(newBaseProduct.getCategoryList());
+    //List<Category> categoryListDB  = this.categoryService.findByList(newBaseProduct.getCategoryList());
+    List<Category> categoryListDB  =  new ArrayList<>(); //this.categoryService.findByList(newBaseProduct.getCategoryList());
     List<BaseProductImage> baseProductImageListDB = this.baseProductImageService.createWithList(newBaseProduct.getBaseProductImageList());
     newBaseProduct.setBaseProductImageList(baseProductImageListDB);
     newBaseProduct.setBrand(brandDB);
-    newBaseProduct.setCategoryList(categoryListDB);
+    newBaseProduct.setCategoryList((Set<Category>) categoryListDB);
     BaseProduct baseProductDB = this.baseProductRepository.save(newBaseProduct);
     this.baseProductImageService.associateWithBaseProduct(baseProductImageListDB, baseProductDB);
     this.brandService.associateWithBaseProduct(brandDB, baseProductDB);
@@ -60,7 +65,7 @@ public class BaseProductService implements IBaseProductService{
     for (Category category: updatedBaseProduct.getCategoryList()){
       categoryListDB.add(this.categoryService.findById(category.getCategory_id()));
     }
-    baseProductDB.setCategoryList(categoryListDB);
+    baseProductDB.setCategoryList((Set<Category>) categoryListDB);
     baseProductDB.setName(updatedBaseProduct.getName());
     baseProductDB.setBase_price(updatedBaseProduct.getBase_price());
     baseProductDB.setChars(updatedBaseProduct.getChars());
@@ -69,12 +74,13 @@ public class BaseProductService implements IBaseProductService{
     //actualizar finalProducts...
     List<FinalProduct> finalProductListDB = (List<FinalProduct>) this.finalProductRepository.findAll();
     for(FinalProduct finalProductDB: finalProductListDB){
-      if(Objects.equals(finalProductDB.getBase_product_id(), base_product_id)){
-        finalProductDB.setBrand(baseProductDB.getBrand().getName());
-        finalProductDB.setName(baseProductDB.getName());
-        //  MUY IMPORTANTE FALTA ACTUALIZAR PRECIOS!!
-        this.finalProductRepository.save(finalProductDB);
-      }
+      //comentado por el nuevo refactor
+//      if(Objects.equals(finalProductDB.getBase_product_id(), base_product_id)){
+//        finalProductDB.setBrand(baseProductDB.getBrand().getName());
+//        finalProductDB.setName(baseProductDB.getName());
+//        //  MUY IMPORTANTE FALTA ACTUALIZAR PRECIOS!!
+//        this.finalProductRepository.save(finalProductDB);
+//      }
     }
 
     return this.baseProductRepository.save(baseProductDB);
@@ -164,6 +170,36 @@ public class BaseProductService implements IBaseProductService{
 
     return  finalProductListFiltred;
 
+  }
+
+  @Override
+  public List<BaseProductInfo> findAllProductsCommerce() {
+    List<BaseProduct> baseProducts = (List<BaseProduct>) baseProductRepository.findAll();
+    List<BaseProductInfo> baseProductCommerceList = new ArrayList<>();
+    for (BaseProduct item:baseProducts){
+      BaseProductInfo baseProductCommerce = new BaseProductInfo();
+      baseProductCommerce.setBaseProductId(item.getBase_product_id());
+      baseProductCommerce.setName(item.getName());
+      baseProductCommerce.setBasePrice(item.getBase_price());
+      baseProductCommerce.setBrand(item.getBrand().getName());
+      List<GenericImage> imageList = new ArrayList<>();
+      List<BaseProductImage> baseProductImageList = item.getBaseProductImageList();
+      for(BaseProductImage imageItem: baseProductImageList){
+        GenericImage image = new GenericImage();
+        image.setUrl(imageItem.getUrl());
+        imageList.add(image);
+      }
+      baseProductCommerce.setImageList(imageList);
+      baseProductCommerceList.add(baseProductCommerce);
+    }
+    return baseProductCommerceList;
+  }
+
+  @Override
+  public ProductDetail getProductDetail(Long id) {
+    return baseProductRepository.findById(id)
+      .map(ProductMapper::toDetailDto) // Use our custom mapper
+      .orElseGet(ProductDetail::new);  // Returns the "Dummy" safe object we created earlier
   }
 
   @Override

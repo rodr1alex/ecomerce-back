@@ -23,16 +23,20 @@ public class Cart {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long cart_id;
+
   private Integer total;
-  private Integer items;
-  @ManyToOne()
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  @JsonIgnore
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   private User user;
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "sale_id", referencedColumnName = "sale_id")
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sale_id")
   private Sale sale;
+
   @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<OrderedProduct> orderedProductList;
+
+  private Integer items;
 
 }

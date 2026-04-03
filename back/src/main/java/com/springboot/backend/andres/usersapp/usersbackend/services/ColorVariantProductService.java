@@ -59,7 +59,8 @@ public class ColorVariantProductService implements IColorVariantProductService {
     List<FinalProduct> finalProductListDB = (List<FinalProduct>) this.finalProductRepository.findAll();
     for(FinalProduct finalProductDB: finalProductListDB){
       if(Objects.equals(finalProductDB.getColorVariantProduct().getColor_variant_product_id(), color_variant_product_id)){
-        finalProductDB.setColor(this.colorService.findById(colorVariantProduct.getColor().getColor_id()).getName());
+
+        //finalProductDB.setColor(this.colorService.findById(colorVariantProduct.getColor().getColor_id()).getName());
         this.finalProductRepository.save(finalProductDB);
       }
     }

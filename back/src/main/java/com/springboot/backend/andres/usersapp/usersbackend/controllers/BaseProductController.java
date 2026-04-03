@@ -1,6 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BaseProductInfo;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetail;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProductImage;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Brand;
@@ -22,6 +24,10 @@ public class BaseProductController {
   private IBaseProductService baseProductService;
 
 
+  @GetMapping("")
+  public List<BaseProductInfo> findAll(){
+    return  this.baseProductService.findAllProductsCommerce();
+  }
 
   @PostMapping("/create")
   public BaseProduct create(@RequestBody BaseProduct newBaseProduct){
@@ -29,8 +35,8 @@ public class BaseProductController {
   }
 
   @GetMapping("/{base_product_id}")
-  public BaseProduct findById(@PathVariable Long base_product_id){
-    return  this.baseProductService.findById(base_product_id);
+  public ProductDetail findById(@PathVariable Long base_product_id){
+    return  this.baseProductService.getProductDetail(base_product_id);
   }
 
   @GetMapping("/featured_products/page/{page}")

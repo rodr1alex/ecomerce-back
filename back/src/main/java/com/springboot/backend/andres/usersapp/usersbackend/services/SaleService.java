@@ -61,11 +61,11 @@ public class SaleService implements ISaleService{
 
     sale.setDate(LocalDateTime.now());
     sale.setDirection(directionDB);
-    sale.setCart_id(cart_id);
-    sale.setUser_id(user_id);
-    sale.setStatus("Realizada");
+   // sale.setCart_id(cart_id);
+   // sale.setUser_id(user_id);
+   // sale.setStatus("Realizada");
     sale = this.saleRepository.save(sale);
-    sale.setUsername(userDB.getUsername());
+   // sale.setUsername(userDB.getUsername());
     cartDB.setSale(sale);
     this.cartService.saveCart(cartDB);
     return sale;
@@ -74,7 +74,8 @@ public class SaleService implements ISaleService{
   @Override
   public String modifySale(Long sale_id, List<OrderedProduct> orderedProductList) {
     Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+    //Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+    Cart cartDB = this.cartService.findById(1L);
     Integer originalTotal = cartDB.getTotal();
     Integer originalItems = cartDB.getItems();
     Integer cartTotal;
@@ -94,14 +95,15 @@ public class SaleService implements ISaleService{
     this.finalProductService.modifyInventory(orderedProductToInventoryList);
 
     //modificar carrito
-    cartTotal = this.cartService.modifyCart(saleDB.getCart_id(), orderedProductList);
+    //cartTotal = this.cartService.modifyCart(saleDB.getCart_id(), orderedProductList);
+    cartTotal = this.cartService.modifyCart(1L, orderedProductList);
 
     if(Objects.equals(cartTotal, 0)){
-      saleDB.setStatus("Anulada");
+     // saleDB.setStatus("Anulada");
       this.saleRepository.save(saleDB);
       return "Venta anulada con exito \n Productos devueltos: " + (originalItems - cartDB.getItems()) + "\n Dinero retornado: " + (originalTotal - cartDB.getTotal());
     }else{
-      saleDB.setStatus("Modificada");
+      //saleDB.setStatus("Modificada");
       this.saleRepository.save(saleDB);
       return "Venta modificada con exito \n Productos devueltos: " + (originalItems - cartDB.getItems()) + "\n Dinero retornado: " + (originalTotal - cartDB.getTotal());
 
@@ -115,7 +117,8 @@ public class SaleService implements ISaleService{
     List<Sale> filtredByUser = new ArrayList<>();
     if(user_id > 0){
       for (Sale saleDB: saleListDB){
-        if(Objects.equals(saleDB.getUser_id(), user_id)){
+        //if(Objects.equals(saleDB.getUser_id(), user_id))
+        if(Objects.equals(1L, user_id)){
           filtredByUser.add(saleDB);
         }
       }
@@ -127,7 +130,8 @@ public class SaleService implements ISaleService{
     List<Sale> filtredByTotal = new ArrayList<>();
     if(endTotal > 0){
       for(Sale saleDB: filtredByUser){
-        Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+        //Cart cartDB = this.cartService.findById(saleDB.getCart_id());
+        Cart cartDB = this.cartService.findById(1L);
         if(cartDB.getTotal() != null) {
           if ((cartDB.getTotal() >= startTotal) && (cartDB.getTotal() <= endTotal)) {
             filtredByTotal.add(saleDB);

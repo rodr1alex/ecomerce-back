@@ -22,15 +22,18 @@ public class Direction {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long direction_id;
+
   private String city;
+
   private String street;
+
   private String number;
-  @ManyToOne()
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  @JsonIgnore
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   private User user;
+
   @OneToMany(mappedBy = "direction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnore
   private List<Sale> saleList;
 
 }

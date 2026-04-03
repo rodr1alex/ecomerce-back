@@ -34,10 +34,10 @@ public class FinalProductService implements IFinalProductService{
     BaseProduct baseProductDB = this.baseProductRepository.findById(colorVariantProductDB.getBaseProduct().getBase_product_id()).get();
     finalProduct.setColorVariantProduct(colorVariantProductDB);
     finalProduct.setSize(sizeDB);
-    finalProduct.setName(baseProductDB.getName());
-    finalProduct.setBrand(baseProductDB.getBrand().getName());
-    finalProduct.setColor(colorVariantProductDB.getColor().getName());
-    finalProduct.setBase_product_id(baseProductDB.getBase_product_id());
+//    finalProduct.setName(baseProductDB.getName());
+//    finalProduct.setBrand(baseProductDB.getBrand().getName());
+//    finalProduct.setColor(colorVariantProductDB.getColor().getName());
+//    finalProduct.setBase_product_id(baseProductDB.getBase_product_id());
     if(!colorVariantProductDB.getColorVariantProductImageList().isEmpty()){
       finalProduct.setImg(colorVariantProductDB.getColorVariantProductImageList().get(0).getUrl());
     }else{

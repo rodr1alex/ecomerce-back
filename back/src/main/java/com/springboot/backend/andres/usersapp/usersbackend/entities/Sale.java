@@ -21,13 +21,18 @@ public class Sale {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long sale_id;
+
   private LocalDateTime date;
-  private Long user_id;
-  private Long cart_id;
-  private String status;
-  private String username;
-  @ManyToOne()
-  @JoinColumn(name = "direction_id", referencedColumnName = "direction_id")
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "direction_id")
   private Direction direction;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "status_id")
+  private SaleStatus status;
+
+  @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL)
+  private Cart cart;
 
 }
