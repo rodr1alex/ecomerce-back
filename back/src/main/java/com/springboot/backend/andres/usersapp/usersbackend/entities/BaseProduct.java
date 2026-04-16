@@ -30,7 +30,7 @@ public class BaseProduct {
 
   private String name;
 
-  private String description;
+  private String description; //sacar?
 
   private Integer base_price;
 

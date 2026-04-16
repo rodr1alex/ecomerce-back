@@ -2,6 +2,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.BasicProductInfoDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CreateBaseProductDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import org.springframework.data.domain.Page;
@@ -24,4 +25,6 @@ public interface IBaseProductService {
 
   public  List<BasicProductInfoDTO> findAllProductsCommerce();
   public ProductDetailDTO getProductDetail(Long id);
+
+  public Long createNew(CreateBaseProductDTO createBaseProductDTO);
 }

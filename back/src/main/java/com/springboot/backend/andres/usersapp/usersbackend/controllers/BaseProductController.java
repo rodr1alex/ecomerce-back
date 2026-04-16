@@ -3,6 +3,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.BasicProductInfoDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CreateBaseProductDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProductImage;
@@ -12,9 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins={"http://localhost:4200"})
 @RestController
@@ -29,9 +34,21 @@ public class BaseProductController {
     return  this.baseProductService.findAllProductsCommerce();
   }
 
+//  @PostMapping("/create")
+//  public BaseProduct create(@RequestBody BaseProduct newBaseProduct){
+//    return this.baseProductService.create(newBaseProduct);
+//  }
+
   @PostMapping("/create")
-  public BaseProduct create(@RequestBody BaseProduct newBaseProduct){
-    return this.baseProductService.create(newBaseProduct);
+  public ResponseEntity<?> createNew(@RequestBody CreateBaseProductDTO createBaseProductDTO) {
+    Long baseProductId = this.baseProductService.createNew(createBaseProductDTO);
+
+    // Creamos un mapa para devolver un JSON limpio: { "id": X, "message": "..." }
+    Map<String, Object> response = new HashMap<>();
+    response.put("id", baseProductId);
+    response.put("message", "Producto creado exitosamente");
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @GetMapping("/{base_product_id}")

@@ -3,8 +3,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
-import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
-import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BaseProductService implements IBaseProductService{
@@ -29,6 +29,20 @@ public class BaseProductService implements IBaseProductService{
   @Autowired
   private IFinalProductRepository finalProductRepository;
 
+  @Autowired
+  private IColorVariantProductRepository colorVariantProductRepository;
+
+  @Autowired
+  private IColorRepository colorRepository;
+
+  @Autowired
+  IColorVariantProductImageRepository colorVariantProductImageRepository;
+
+  @Autowired
+  ISizeRepository sizeRepository;
+
+
+
   @Override
   public BaseProduct create(BaseProduct newBaseProduct) {
     Brand brandDB = this.brandService.findById(newBaseProduct.getBrand().getBrand_id());
@@ -42,6 +56,80 @@ public class BaseProductService implements IBaseProductService{
     this.brandService.associateWithBaseProduct(brandDB, baseProductDB);
 
     return baseProductDB;
+  }
+
+  @Override
+  public Long createNew(CreateBaseProductDTO createBaseProductDTO) {
+    //paso1 crear base_product
+    BaseProduct baseProduct = new BaseProduct();
+    baseProduct.setName(createBaseProductDTO.getName());
+    baseProduct.setBase_price(createBaseProductDTO.getBase_price());
+    baseProduct.setChars(createBaseProductDTO.getChars());
+    baseProduct.setSpecs(createBaseProductDTO.getSpecs());
+    baseProduct.setBrand(this.brandService.findById(createBaseProductDTO.getBrand_id()));
+
+    Set<Category> categories = createBaseProductDTO.getCategories_id().stream().map(item -> {
+      return this.categoryService.findById(item);
+    }).collect(Collectors.toSet());
+
+    baseProduct.setCategoryList((Set<Category>) categories);
+
+    BaseProduct baseProductCreated = this.baseProductRepository.save(baseProduct);
+
+    setBaseProductsImages(baseProductCreated, createBaseProductDTO.getBaseProductImagesURL());
+
+    //paso2 recorrer color_variantproducot
+    createBaseProductDTO.getColorVariantProductList().forEach(item -> {
+      createColorVariantProducts(baseProductCreated, item);
+    });
+
+    return baseProductCreated.getBase_product_id();
+  }
+
+  private void setBaseProductsImages( BaseProduct baseProduct, List<String> urls){
+    if (urls == null) return;
+
+    List<BaseProductImage> baseProductImageList = urls.stream().map(url -> {
+      return (this.baseProductImageService.create(new BaseProductImage(null, url, baseProduct)));
+    }).collect(Collectors.toList());
+
+    baseProduct.setBaseProductImageList(baseProductImageList);
+    this.baseProductRepository.save(baseProduct);
+  }
+
+  private void createColorVariantProducts(BaseProduct baseProduct, CreateColorVariantProductDTO createColorVariantProductDTO){
+    ColorVariantProduct colorVariantProduct = new ColorVariantProduct();
+    colorVariantProduct.setBaseProduct(baseProduct);
+    colorVariantProduct.setColor(colorRepository.findById(createColorVariantProductDTO.getColor_id()).get());
+    ColorVariantProduct colorVariantProductCreated = colorVariantProductRepository.save(colorVariantProduct);
+
+    setColorVariantProductsImages(colorVariantProductCreated, createColorVariantProductDTO.getColorVariantProductImagesURL());
+
+    //paso 2.1 recorrer final_products
+    createColorVariantProductDTO.getFinalProductList().forEach(item -> {
+      createFinalProducts(colorVariantProductCreated, item);
+    });
+  }
+
+  private void setColorVariantProductsImages(ColorVariantProduct colorVariantProduct, List<String> urls){
+    if (urls == null) return;
+
+    List<ColorVariantProductImage> colorVariantProductImageList = urls.stream().map(url -> {
+      return (this.colorVariantProductImageRepository.save(new ColorVariantProductImage(null, url, colorVariantProduct)));
+    }).collect(Collectors.toList());
+
+    colorVariantProduct.setColorVariantProductImageList(colorVariantProductImageList);
+    this.colorVariantProductRepository.save(colorVariantProduct);
+  }
+
+  private void createFinalProducts(ColorVariantProduct colorVariantProduct, CreateFinalProductDTO createFinalProductDTO ){
+    FinalProduct finalProduct = new FinalProduct();
+    finalProduct.setStock(createFinalProductDTO.getStock());
+    finalProduct.setFinal_price(createFinalProductDTO.getFinal_price());
+    finalProduct.setColorVariantProduct(colorVariantProduct);
+    finalProduct.setSize(sizeRepository.findById(createFinalProductDTO.getSize_id()).get());
+    finalProduct.setImg(colorVariantProduct.getColorVariantProductImageList().get(0).getUrl()); //verificar si esta era la imagen que necesito
+    finalProductRepository.save(finalProduct);
   }
 
   @Override
@@ -198,6 +286,8 @@ public class BaseProductService implements IBaseProductService{
       .map(ProductMapper::mapBaseProductToProductDetail) // Use our custom mapper
       .orElseGet(ProductDetailDTO::new);  // Returns the "Dummy" safe object we created earlier
   }
+
+
 
   @Override
   public Page<BasicProductInfoDTO> filterByCategoryList(List<Long> categoriesIds, Pageable pageable) {

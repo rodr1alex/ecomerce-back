@@ -50,7 +50,7 @@ public class SpringSecurityConfig {
                   "/users/{id}", "/users/baseproducts", "/users/baseproducts/{id}", "/users/page/{page_size}/{page}", "/sales/statuses"
                   ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/users", "/base_products/filter/category_list/page/{page}", "/base_products/filter/brand/{brand_id}/page/{page}",
-                  "/base_products/filter/brand/get_list").permitAll()
+                  "/base_products/filter/brand/get_list", "/base_products/create/new").permitAll()
                 .requestMatchers(HttpMethod.POST, "/users/directions/create/{id}", "/cart/create/{user_id}",
                   "/sales/create").hasAnyRole("USER","ADMIN")
                 .requestMatchers(HttpMethod.GET, "/users/{id}", "/users/directions/getByUser/{user_id}").hasAnyRole("USER", "ADMIN")
