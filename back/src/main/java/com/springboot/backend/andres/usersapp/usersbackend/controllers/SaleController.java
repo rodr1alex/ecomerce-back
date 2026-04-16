@@ -1,10 +1,13 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Direction;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Sale;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.SaleMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.ISaleStatusRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ICartService;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IFinalProductService;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ISaleService;
@@ -31,9 +34,15 @@ public class SaleController {
   @Autowired
   private ICartService cartService;
 
+
   @GetMapping("/{sale_id}")
-  public Sale findById(@PathVariable Long sale_id){
-    return this.saleService.findById(sale_id);
+  public SaleDetailDTO findById(@PathVariable Long sale_id){
+    return SaleMapper.mapSaleToSaleDetailDTO(this.saleService.findById(sale_id));
+  }
+
+  @GetMapping("/statuses")
+  public List<SaleStatusDTO> getSaleStatuses(){
+    return saleService.getAllSaleStatus().stream().map(SaleMapper::mapSaleStatusToSaleStatusDTO).toList();
   }
 
   @GetMapping("/{pageSize}/{page}")
@@ -42,27 +51,51 @@ public class SaleController {
     return this.saleService.findAll(pageable);
   }
 
-  @GetMapping("/filter/{user_id}/{startTotal}/{endTotal}/{pageSize}/{page}/{status}")
-  private Page<Sale> filter(@PathVariable Long user_id,@PathVariable Integer startTotal,@PathVariable Integer endTotal,@PathVariable Integer pageSize,@PathVariable Integer page, @PathVariable String status){
+  @PostMapping("/filter")
+  private ResponseEntity<Page<SaleDTO>> filter(@RequestBody SaleFilter filters) {
+    // Definimos el Pageable usando los datos del filtro
+    Pageable pageable = PageRequest.of(filters.getPage(), filters.getPageSize());
+
+    // NOTA: Aquí podrías manejar las fechas que vienen en el filtro
+    // o mantener estas por defecto según tu lógica actual
     Date startDate = new Date();
     Date endDate = new Date();
-    Pageable pageable = PageRequest.of(page, pageSize);
-    return this.saleService.filter(pageable, user_id, startDate, endDate, startTotal, endTotal, status);
+
+    // Ejecutamos la búsqueda filtrada
+    Page<Sale> salePage = this.saleService.filter(
+      pageable,
+      filters.getUser_id(),
+      startDate,
+      endDate,
+      filters.getStartTotal(),
+      filters.getEndTotal(),
+      filters.getSaleStatus_id()
+    );
+
+    // Mapeamos a DTO y envolvemos en un ResponseEntity para un estándar REST más limpio
+    return ResponseEntity.ok(salePage.map(SaleMapper::mapSaleToSaleDTO));
   }
 
-  @PostMapping("/create/{cart_id}/{user_id}")
-  private ResponseEntity<?> createSale(@PathVariable Long cart_id,@RequestBody Direction direction,@PathVariable Long user_id){
-    Cart cartDB = this.cartService.findById(cart_id);
-    if(this.finalProductService.verifyInventory(cartDB.getOrderedProductList()).isEmpty()){
-        return ResponseEntity.status(HttpStatus.OK).body(this.saleService.createSale(cart_id, direction.getDirection_id(),user_id));
+  @PostMapping("/create")
+  private ResponseEntity<?> createSale(@RequestBody CartDTO cart){
+    List<FinalProductDTO> productsNoStock = this.finalProductService.verifyInventory(cart.getProducts());
+
+    if(!productsNoStock.isEmpty()){
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(productsNoStock);
     }
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-      .body(this.finalProductService.verifyInventory(cartDB.getOrderedProductList()));
+
+    Sale sale = this.saleService.createSale(cart);
+    return ResponseEntity.status(200).body(sale.getSale_id());
   }
 
   @PutMapping("/modify/{sale_id}")
-  private void modify(@PathVariable Long sale_id,@RequestBody List<OrderedProduct> orderedProductList){
-     this.saleService.modifySale(sale_id, orderedProductList);
+  private ResponseEntity<?> modify(@PathVariable Long sale_id,@RequestBody List<ProductReturned> orderedProductList){
+     return ResponseEntity.status(HttpStatus.OK).body(this.saleService.modifySale(sale_id, orderedProductList));
+  }
+
+  @PutMapping("/cancel/{sale_id}")
+  private ResponseEntity<?> cancelSale(@PathVariable Long sale_id){
+    return  ResponseEntity.status(HttpStatus.OK).body(this.saleService.cancelSale(sale_id));
   }
 
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 
 @Data
-public class BaseProductInfo {
+public class BasicProductInfoDTO {
   private long baseProductId = 0;
   private String name;
   private double basePrice;

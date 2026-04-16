@@ -1,6 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Brand;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +22,8 @@ public class BrandController {
   }
 
   @GetMapping()
-  public List<Brand> findAll(){
-    return this.brandService.findAll();
+  public List<BrandDTO> findAll(){
+    return this.brandService.findAll().stream().map(GeneralMapper::mapBrandToBrandDTO).toList();
   }
 
   @GetMapping("/{brand_id}")

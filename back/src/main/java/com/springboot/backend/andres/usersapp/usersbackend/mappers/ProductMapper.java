@@ -1,8 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.mappers;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.Color;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.Size;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ColorDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.SizeDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
+import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,96 +11,132 @@ import java.util.stream.Collectors;
 
 public class ProductMapper {
 
-  // Main mapping function
-  public static ProductDetail toDetailDto(BaseProduct entity) {
-    if (entity == null) return new ProductDetail();
 
-    ProductDetail dto = new ProductDetail();
-    dto.setBaseProductId(entity.getBase_product_id());
-    dto.setName(entity.getName());
-    dto.setBasePrice(entity.getBase_price());
-    dto.setBrand(entity.getBrand() != null ? entity.getBrand().getName() : "");
-    dto.setChars(entity.getChars());
-    dto.setSpecs(entity.getSpecs());
+
+  public static OrderedProductDetailDTO mapOrderedProductToOrderedProductDetailDTO(OrderedProduct orderedProduct){
+    OrderedProductDetailDTO orderedProductDetailDTO = new OrderedProductDetailDTO();
+
+    orderedProductDetailDTO.setOrdered_product_id(orderedProduct.getOrdered_product_id());
+    orderedProductDetailDTO.setFinal_product_id(orderedProduct.getFinalProduct().getFinal_product_id());
+    orderedProductDetailDTO.setBase_product_id(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getBase_product_id());
+    orderedProductDetailDTO.setQuantity(orderedProduct.getQuantity());
+    orderedProductDetailDTO.setOriginalQuantity(orderedProduct.getOriginalquantity());
+    orderedProductDetailDTO.setImgUrl(orderedProduct.getFinalProduct().getImg());
+    orderedProductDetailDTO.setBrand(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getBrand().getName());
+    orderedProductDetailDTO.setProductName(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getName());
+    orderedProductDetailDTO.setColor(orderedProduct.getFinalProduct().getColorVariantProduct().getColor().getName());
+    orderedProductDetailDTO.setSize(orderedProduct.getFinalProduct().getSize().getName());
+    orderedProductDetailDTO.setPriceAtPurchase(orderedProduct.getPrice_at_purchase());
+
+    return  orderedProductDetailDTO;
+  }
+
+  // Main mapping function
+  public static ProductDetailDTO mapBaseProductToProductDetail(BaseProduct baseProduct) {
+    if (baseProduct == null) return new ProductDetailDTO();
+
+    ProductDetailDTO productDetail = new ProductDetailDTO();
+    productDetail.setBaseProductId(baseProduct.getBase_product_id());
+    productDetail.setName(baseProduct.getName());
+    productDetail.setBasePrice(baseProduct.getBase_price());
+    productDetail.setBrand(baseProduct.getBrand() != null ? baseProduct.getBrand().getName() : "Desconocido");
+    productDetail.setChars(baseProduct.getChars());
+    productDetail.setSpecs(baseProduct.getSpecs());
 
     // Functional mapping of the main image list
-    dto.setImageList(mapImages(entity.getBaseProductImageList()));
+    productDetail.setImageList(mapBaseProductImagesToGenericImages(baseProduct.getBaseProductImageList()));
 
 
-    dto.setSizesColorsAvailable(toSizesColorsList(entity.getColorVariantProductList()));
+    productDetail.setSizesColorsAvailable(toSizesColorsList(baseProduct.getColorVariantProductList()));
 
     // Functional mapping of the color variants
-    dto.setColorsVariantInfo(
-      entity.getColorVariantProductList().stream()
-        .map(ProductMapper::toColorVariantDto)
+    productDetail.setColorsVariantInfo(
+      baseProduct.getColorVariantProductList().stream()
+        .map(ProductMapper::mapColorVariantProductToColorVariantInfo)
         .collect(Collectors.toList())
     );
 
-    return dto;
+    return productDetail;
+  }
+
+  public static BasicProductInfoDTO mapBaseProductToBaseProductInfo(BaseProduct baseProduct) {
+    if (baseProduct == null) return new BasicProductInfoDTO();
+
+    BasicProductInfoDTO baseProductInfo = new BasicProductInfoDTO();
+    baseProductInfo.setBaseProductId(baseProduct.getBase_product_id());
+    baseProductInfo.setName(baseProduct.getName());
+    baseProductInfo.setBasePrice(baseProduct.getBase_price());
+    baseProductInfo.setBrand(baseProduct.getBrand().getName());
+    List<GenericImage> imageList = new ArrayList<>();
+    List<BaseProductImage> baseProductImageList = baseProduct.getBaseProductImageList();
+    for(BaseProductImage imageItem: baseProductImageList){
+      GenericImage image = new GenericImage();
+      image.setUrl(imageItem.getUrl());
+      imageList.add(image);
+    }
+    baseProductInfo.setImageList(imageList);
+
+    return baseProductInfo;
   }
 
   //Helper recibe ColorVariantProductList return List<SizesColors>
   private static List<SizesColors> toSizesColorsList(List<ColorVariantProduct> colorVariantProductList){
     List<SizesColors> sizesColorsList = new ArrayList<>();
 
-    for(ColorVariantProduct colorVariantProduct: colorVariantProductList){
-      toSizesColorsList(colorVariantProduct).stream().forEach(item -> sizesColorsList.add(item));
-    }
+    colorVariantProductList
+      .forEach(colorVariantProduct -> toSizesColorsList(colorVariantProduct)
+        .forEach(item -> sizesColorsList.add(item)));
+
 
     return sizesColorsList;
 
   }
 
   private static List<SizesColors> toSizesColorsList(ColorVariantProduct colorVariantProduct){
-    List<SizesColors> sizesColorsList = new ArrayList<>();
 
+    return colorVariantProduct.getFinalProductList().stream()
+      .map(finalProduct -> {
+        SizesColors sizesColor = new SizesColors();
 
-    List<FinalProduct> finalProductList = colorVariantProduct.getFinalProductList();
+        ColorDTO colorDto = new ColorDTO();
+        colorDto.setColor_id(colorVariantProduct.getColor().getColor_id());
+        colorDto.setName(colorVariantProduct.getColor().getName());
+        colorDto.setHex_code_color(colorVariantProduct.getColor().getHex_code_color());
+        sizesColor.setColor(colorDto);
 
-    for(FinalProduct finalProduct: finalProductList){
-      SizesColors sizesColor = new SizesColors();
+        SizeDTO sizeDto = new SizeDTO();
+        sizeDto.setSize_id(finalProduct.getSize().getSize_id());
+        sizeDto.setName(finalProduct.getSize().getName());
+        sizesColor.setSize(sizeDto);
 
-      Color colorDto = new Color();
-      colorDto.setColor_id(colorVariantProduct.getColor().getColor_id());
-      colorDto.setName(colorVariantProduct.getColor().getName());
-      sizesColor.setColor(colorDto);
-
-      Size sizeDto = new Size();
-      sizeDto.setSize_id(finalProduct.getSize().getSize_id());
-      sizeDto.setName(finalProduct.getSize().getName());
-      sizesColor.setSize(sizeDto);
-
-      sizesColor.setFinalProductId(finalProduct.getFinal_product_id());
-
-      sizesColorsList.add(sizesColor);
-
-    }
-
-    return sizesColorsList;
+        sizesColor.setFinalProductId(finalProduct.getFinal_product_id());
+        return sizesColor;
+      }).collect(Collectors.toList());
 
   }
 
 
 
   // Helper to map ColorVariantProduct -> ColorVariantInfo
-  private static ColorVariantInfo toColorVariantDto(ColorVariantProduct variant) {
-    ColorVariantInfo info = new ColorVariantInfo();
+  private static ColorVariantInfo mapColorVariantProductToColorVariantInfo(ColorVariantProduct colorVariantProduct) {
+    ColorVariantInfo colorVariantInfo = new ColorVariantInfo();
 
     // Map the color sub-object
-    Color colorDto = new Color();
-    colorDto.setColor_id(variant.getColor().getColor_id());
-    colorDto.setName(variant.getColor().getName());
-    info.setColor(colorDto);
+    ColorDTO colorDto = new ColorDTO();
+    colorDto.setColor_id(colorVariantProduct.getColor().getColor_id());
+    colorDto.setName(colorVariantProduct.getColor().getName());
+    colorDto.setHex_code_color(colorVariantProduct.getColor().getHex_code_color());
+    colorVariantInfo.setColor(colorDto);
 
     // Map the nested images using the same logic as the main list
-    info.setImageList(mapImagesForVariant(variant.getColorVariantProductImageList()));
+    colorVariantInfo.setImageList(mapColorVariantProductImagesToGenericImages(colorVariantProduct.getColorVariantProductImageList()));
 
-    return info;
+    return colorVariantInfo;
   }
 
   // Generic-like mapping for different image entity types
-  private static List<GenericImage> mapImages(List<BaseProductImage> entities) {
-    return entities.stream()
+  private static List<GenericImage> mapBaseProductImagesToGenericImages(List<BaseProductImage> baseProductImages) {
+    return baseProductImages.stream()
       .map(img -> {
         GenericImage g = new GenericImage();
         g.setUrl(img.getUrl());
@@ -108,8 +145,8 @@ public class ProductMapper {
       .collect(Collectors.toList());
   }
 
-  private static List<GenericImage> mapImagesForVariant(List<ColorVariantProductImage> entities) {
-    return entities.stream()
+  private static List<GenericImage> mapColorVariantProductImagesToGenericImages(List<ColorVariantProductImage> colorVariantProductImages) {
+    return colorVariantProductImages.stream()
       .map(img -> {
         GenericImage g = new GenericImage();
         g.setUrl(img.getUrl());
@@ -117,4 +154,28 @@ public class ProductMapper {
       })
       .collect(Collectors.toList());
   }
+
+  public static AdminFinalProductDTO mapFinalProductToAdminFinalProductDTO(FinalProduct finalProduct) {
+    AdminFinalProductDTO adminFinalProductDTO = new AdminFinalProductDTO();
+
+
+    adminFinalProductDTO.setFinal_product_id(finalProduct.getFinal_product_id());
+    adminFinalProductDTO.setFinal_price(finalProduct.getFinal_price());
+    adminFinalProductDTO.setColor(finalProduct.getColorVariantProduct().getColor().getName());
+    adminFinalProductDTO.setSize(finalProduct.getSize().getName());
+    adminFinalProductDTO.setBrand(finalProduct.getColorVariantProduct().getBaseProduct().getBrand().getName());
+    adminFinalProductDTO.setName(finalProduct.getColorVariantProduct().getBaseProduct().getName());
+    adminFinalProductDTO.setStock(finalProduct.getStock());
+
+
+    return adminFinalProductDTO;
+  }
 }
+
+
+//private Long final_product_id;
+//private Integer final_price;
+//private String color;
+//private String size;
+//private String brand;
+//private String name;

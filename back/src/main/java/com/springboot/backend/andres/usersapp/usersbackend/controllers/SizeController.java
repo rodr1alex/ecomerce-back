@@ -1,7 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.SizeDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Size;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ISizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class SizeController {
   }
 
   @GetMapping()
-  public List<Size> findAll(){
-    return this.sizeService.findAll();
+  public List<SizeDTO> findAll(){
+    return this.sizeService.findAll().stream().map(GeneralMapper::mapSizeToSizeDTO).toList();
   }
 
   @GetMapping("/{size_id}")

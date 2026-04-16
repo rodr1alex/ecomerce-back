@@ -1,7 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.BaseProductInfo;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetail;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BasicProductInfoDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +16,12 @@ public interface IBaseProductService {
   public BaseProduct update(BaseProduct updatedBaseProduct, Long base_product_id);
   public BaseProduct addImage(BaseProductImage baseProductImage, Long base_product_id);
   public BaseProduct removeImage(BaseProductImage baseProductImage, Long base_product_id);
-  public Page<BaseProduct> filterByBrand(Long brand_id, Pageable pageable, List<Category> categoryList);
-  public Page<BaseProduct> filterByCategoryList(List<Category> categoryList, Pageable pageable);
-  public List<Brand> getBrandList(List<Category> categoryList);
-  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Category> categoryList);
+  public Page<BasicProductInfoDTO> filterByBrand(Long brand_id, Pageable pageable, List<Category> categoryList);
+  public Page<BasicProductInfoDTO> filterByCategoryList(List<Long> categoriesIds, Pageable pageable);
+  public List<BrandDTO> getBrandList(List<Long> categoriesIds);
+  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Long> categories);
   //public void associateWithColorVariantProduct(BaseProduct baseProduct, ColorVariantProduct colorVariantProduct);
 
-  public  List<BaseProductInfo> findAllProductsCommerce();
-  public ProductDetail getProductDetail(Long id);
+  public  List<BasicProductInfoDTO> findAllProductsCommerce();
+  public ProductDetailDTO getProductDetail(Long id);
 }

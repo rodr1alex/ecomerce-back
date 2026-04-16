@@ -3,6 +3,8 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserFilterDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +16,10 @@ import com.springboot.backend.andres.usersapp.usersbackend.models.UserRequest;
 public interface UserService {
     List<User> findAll();
     Page<User> findAll(Pageable pageable);
-    Page<User> filter(Pageable pageable, Role role);
+    Page<UserDTO> filter(UserFilterDTO userFilter);
     Optional<User> findById(@NonNull Long id);
     User save(User user);
-    Optional<User> update(User user, Long id);
+    Optional<UserDTO> update(UserDTO user, Long id);
     Optional<User> updatePassword(User user, Long id);
     void deleteById(Long id);
 }

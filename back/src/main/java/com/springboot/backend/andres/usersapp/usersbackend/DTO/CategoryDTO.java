@@ -1,11 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.DTO;
 
-
 import lombok.Data;
 
 @Data
-public class Size {
-  private Long size_id;
+public class CategoryDTO {
+  private Long category_id;
   private String name;
-
 }

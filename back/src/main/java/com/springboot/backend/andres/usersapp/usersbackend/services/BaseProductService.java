@@ -1,7 +1,6 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.Color;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
@@ -33,8 +32,7 @@ public class BaseProductService implements IBaseProductService{
   @Override
   public BaseProduct create(BaseProduct newBaseProduct) {
     Brand brandDB = this.brandService.findById(newBaseProduct.getBrand().getBrand_id());
-    //List<Category> categoryListDB  = this.categoryService.findByList(newBaseProduct.getCategoryList());
-    List<Category> categoryListDB  =  new ArrayList<>(); //this.categoryService.findByList(newBaseProduct.getCategoryList());
+    List<Category> categoryListDB  =  new ArrayList<>();
     List<BaseProductImage> baseProductImageListDB = this.baseProductImageService.createWithList(newBaseProduct.getBaseProductImageList());
     newBaseProduct.setBaseProductImageList(baseProductImageListDB);
     newBaseProduct.setBrand(brandDB);
@@ -100,7 +98,7 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
-  public Page<BaseProduct>  filterByBrand(Long brand_id, Pageable pageable, List<Category> categoryList) {
+  public Page<BasicProductInfoDTO>  filterByBrand(Long brand_id, Pageable pageable, List<Category> categoryList) {
     //List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
     List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
     for(Category category: categoryList){
@@ -119,18 +117,17 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
-  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Category> categoryList) {
+  public List<FinalProduct>  filterByBrandAndCategoryListAndColorAndSize(Long brand_id, Long color_id, Long size_id, List<Long> categories) {
     List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
-    if(categoryList.get(0).getCategory_id() > 0){
-      for(Category category: categoryList){
-        System.out.println("Filtrando  por: " + this.categoryService.findById(category.getCategory_id()).getName());
-        baseProductListDB = this.filterByCategory(baseProductListDB, category.getCategory_id());
+    if(!categories.isEmpty()){
+      for(Long category_id: categories){
+        baseProductListDB = this.filterByCategory(baseProductListDB, category_id);
       }
     }
 
     List<BaseProduct> filtredList = new ArrayList<>();
     for(BaseProduct baseProductDB: baseProductListDB){
-      if(brand_id > 0){
+      if(brand_id !=null){
         if(Objects.equals(baseProductDB.getBrand().getBrand_id(), brand_id)){
           filtredList.add(baseProductDB);
         }
@@ -143,7 +140,7 @@ public class BaseProductService implements IBaseProductService{
     List<ColorVariantProduct> colorVariantProductListFiltred = new ArrayList<>();
     for (BaseProduct baseProductDB: filtredList){
       for(ColorVariantProduct colorVariantProductDB: baseProductDB.getColorVariantProductList()){
-        if(color_id > 0){
+        if(color_id != null){
           if(Objects.equals(colorVariantProductDB.getColor().getColor_id(), color_id)){
             colorVariantProductListFiltred.add(colorVariantProductDB);
           }
@@ -157,7 +154,7 @@ public class BaseProductService implements IBaseProductService{
     List<FinalProduct> finalProductListFiltred = new ArrayList<>();
     for (ColorVariantProduct colorVariantProductDB: colorVariantProductListFiltred){
       for(FinalProduct finalProductDB: colorVariantProductDB.getFinalProductList()){
-        if(size_id > 0){
+        if(size_id != null){
           if(Objects.equals(finalProductDB.getSize().getSize_id(), size_id)){
             finalProductListFiltred.add(finalProductDB);
           }
@@ -173,11 +170,11 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
-  public List<BaseProductInfo> findAllProductsCommerce() {
+  public List<BasicProductInfoDTO> findAllProductsCommerce() {
     List<BaseProduct> baseProducts = (List<BaseProduct>) baseProductRepository.findAll();
-    List<BaseProductInfo> baseProductCommerceList = new ArrayList<>();
+    List<BasicProductInfoDTO> baseProductCommerceList = new ArrayList<>();
     for (BaseProduct item:baseProducts){
-      BaseProductInfo baseProductCommerce = new BaseProductInfo();
+      BasicProductInfoDTO baseProductCommerce = new BasicProductInfoDTO();
       baseProductCommerce.setBaseProductId(item.getBase_product_id());
       baseProductCommerce.setName(item.getName());
       baseProductCommerce.setBasePrice(item.getBase_price());
@@ -196,40 +193,27 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
-  public ProductDetail getProductDetail(Long id) {
+  public ProductDetailDTO getProductDetail(Long id) {
     return baseProductRepository.findById(id)
-      .map(ProductMapper::toDetailDto) // Use our custom mapper
-      .orElseGet(ProductDetail::new);  // Returns the "Dummy" safe object we created earlier
+      .map(ProductMapper::mapBaseProductToProductDetail) // Use our custom mapper
+      .orElseGet(ProductDetailDTO::new);  // Returns the "Dummy" safe object we created earlier
   }
 
   @Override
-  public Page<BaseProduct> filterByCategoryList(List<Category> categoryList, Pageable pageable) {
-    List<Brand> brandList = new ArrayList<>();
-    List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
-    for(Category category: categoryList){
-      System.out.println("Filtrando  por: " + this.categoryService.findById(category.getCategory_id()).getName());
-      baseProductListDB = this.filterByCategory(baseProductListDB, category.getCategory_id());
-    }
-    for(BaseProduct baseProduct:baseProductListDB ){
-      System.out.println("agregando: " + baseProduct.getBrand().getName());
-      brandList.add(baseProduct.getBrand());
-    }
-    return this.convertListToPage(baseProductListDB, pageable);
+  public Page<BasicProductInfoDTO> filterByCategoryList(List<Long> categoriesIds, Pageable pageable) {
+    Long size = (long) categoriesIds.size();
+    Page<BaseProduct> baseProductsFiltered = this.baseProductRepository.findByAllCategories(categoriesIds, size, pageable);
+    return baseProductsFiltered.map(ProductMapper::mapBaseProductToBaseProductInfo);
   }
 
-  @Override
-  public List<Brand> getBrandList(List<Category> categoryList) {
-    List<Brand> brandList = new ArrayList<>();
-    List<BaseProduct> baseProductListDB = (List<BaseProduct>) this.baseProductRepository.findAll();
-    for(Category category: categoryList){
-      System.out.println("Filtrando  por: " + this.categoryService.findById(category.getCategory_id()).getName());
-      baseProductListDB = this.filterByCategory(baseProductListDB, category.getCategory_id());
-    }
-    for(BaseProduct baseProduct:baseProductListDB ){
-      brandList.add(baseProduct.getBrand());
-    }
-    return brandList;
 
+  @Override
+  public List<BrandDTO> getBrandList(List<Long> categoriesIds) {
+    if (categoriesIds == null || categoriesIds.isEmpty()) {
+      return new ArrayList<>();
+    }
+    Long size = (long) categoriesIds.size();
+    return this.baseProductRepository.findBrandsWithAllCategories(categoriesIds, size);
   }
 
 
@@ -246,7 +230,7 @@ public class BaseProductService implements IBaseProductService{
     return  filtredList;
   }
 
-  public  Page<BaseProduct> convertListToPage(List<BaseProduct> list, Pageable pageable) {
+  public  Page<BasicProductInfoDTO> convertListToPage(List<BaseProduct> list, Pageable pageable) {
     if (list == null || list.isEmpty()) {
       return new PageImpl<>(List.of(), pageable, 0);
     }
@@ -254,11 +238,32 @@ public class BaseProductService implements IBaseProductService{
     int start = (int) pageable.getOffset();
     int end = Math.min((start + pageable.getPageSize()), list.size());
 
+    List<BasicProductInfoDTO> baseProductCommerceList = new ArrayList<>();
+    for (BaseProduct item:list){
+      BasicProductInfoDTO baseProductCommerce = new BasicProductInfoDTO();
+      baseProductCommerce.setBaseProductId(item.getBase_product_id());
+      baseProductCommerce.setName(item.getName());
+      baseProductCommerce.setBasePrice(item.getBase_price());
+      baseProductCommerce.setBrand(item.getBrand().getName());
+      List<GenericImage> imageList = new ArrayList<>();
+      List<BaseProductImage> baseProductImageList = item.getBaseProductImageList();
+      for(BaseProductImage imageItem: baseProductImageList){
+        GenericImage image = new GenericImage();
+        image.setUrl(imageItem.getUrl());
+        imageList.add(image);
+      }
+      baseProductCommerce.setImageList(imageList);
+      baseProductCommerceList.add(baseProductCommerce);
+    }
+    //return baseProductCommerceList;
+
+
+
     if (start > end) {
       return new PageImpl<>(List.of(), pageable, list.size());
     }
 
-    List<BaseProduct> subList = list.subList(start, end);
+    List<BasicProductInfoDTO> subList = baseProductCommerceList.subList(start, end);
     return new PageImpl<>(subList, pageable, list.size());
   }
 

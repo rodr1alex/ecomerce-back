@@ -35,7 +35,7 @@ public class User implements IUser {
     private String email;
 
     @NotBlank
-    @Size(min=4, max = 12)
+    @Size(min=4, max = 24)
     private String username;
 
     @Transient

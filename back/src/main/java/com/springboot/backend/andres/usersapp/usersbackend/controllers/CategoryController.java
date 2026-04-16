@@ -1,7 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CategoryDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class CategoryController {
   }
 
   @GetMapping()
-  public List<Category> findAll(){
-    return this.categoryService.findAll();
+  public List<CategoryDTO> findAll(){
+    return this.categoryService.findAll().stream().map(GeneralMapper::mapCategoryToCategoryDTO).toList();
   }
 
   @GetMapping("/{category_id}")

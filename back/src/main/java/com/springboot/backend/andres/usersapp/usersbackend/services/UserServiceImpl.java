@@ -4,11 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserFilterDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
+import com.springboot.backend.andres.usersapp.usersbackend.entities.Direction;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.UserMapper;
+import com.springboot.backend.andres.usersapp.usersbackend.repositories.IDirectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +37,8 @@ public class UserServiceImpl implements UserService{
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private IDirectionRepository directionRepository;
 
 
     @Override
@@ -45,28 +54,30 @@ public class UserServiceImpl implements UserService{
     }
 
   @Override
-  public Page<User> filter(Pageable pageable, Role role) {
+  public Page<UserDTO> filter(UserFilterDTO userFilter) {
+      // Pageable pageable, Role role
+
+    Pageable pageable = PageRequest.of(userFilter.getPage(), userFilter.getPage_size());
     List<User> userListDB = (List<User>) this.repository.findAll();
     List<User> filtredUserList = new ArrayList<>();
-    if(role.getId() > 0){
-      if(role.getId() == 1){
-        for(User userDB: userListDB){
-          if (userDB.getRoles().size() == 1){
-            filtredUserList.add(userDB);
-          }
-        }
-      }else {
-        for (User userDB : userListDB) {
-          if (userDB.getRoles().size() == 2) {
-            filtredUserList.add(userDB);
-          }
-        }
-      }
-    }else {
-      filtredUserList = userListDB;
+
+    if(userFilter.getAdmin() == null){
+      return this.convertListToPage(userListDB.stream()
+        .map(UserMapper::mapUserToUserDTO).toList(), pageable);
     }
 
-    return this.convertListToPage(filtredUserList, pageable);
+    if(userFilter.getAdmin()){
+      filtredUserList = userListDB.stream()
+        .filter(userDB -> userDB.getRoles().size() == 2)
+        .collect(Collectors.toList());
+    }else{
+      filtredUserList = userListDB.stream()
+        .filter(userDB -> userDB.getRoles().size() == 1)
+        .collect(Collectors.toList());
+    }
+
+    return this.convertListToPage(filtredUserList.stream()
+      .map(UserMapper::mapUserToUserDTO).toList(), pageable);
   }
 
   @Transactional(readOnly = true)
@@ -80,24 +91,35 @@ public class UserServiceImpl implements UserService{
     public User save(User user) {
         user.setRoles(getRoles(user));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return repository.save(user);
+        List<Direction> directions = user.getDirectionList();
+        user.setDirectionList(null);
+        User newUser = repository.save(user);
+
+      List<Direction> directionsNew = directions.stream().map(direction -> {
+          direction.setUser(newUser);
+          return this.directionRepository.save(direction);
+        }).toList();
+        newUser.setDirectionList(directionsNew);
+        return newUser;
     }
 
     @Override
     @Transactional
-    public Optional<User> update(User user, Long id) {
+    public Optional<UserDTO> update(UserDTO userDTO, Long id) {
         Optional<User> userOptional = repository.findById(id);
 
         if (userOptional.isPresent()) {
             User userDb = userOptional.get();
-            userDb.setEmail(user.getEmail());
-            userDb.setLastname(user.getLastname());
-            userDb.setName(user.getName());
-            userDb.setUsername(user.getUsername());
-            return Optional.of(repository.save(userDb));
+            userDb.setEmail(userDTO.getEmail());
+            userDb.setLastname(userDTO.getLastname());
+            userDb.setName(userDTO.getName());
+            userDb.setUsername(userDTO.getUsername());
+            return Optional.of(UserMapper.mapUserToUserDTO(repository.save(userDb)));
         }
         return Optional.empty();
     }
+
+
   @Override
   @Transactional
   public Optional<User> updatePassword(User user, Long id) {
@@ -130,7 +152,7 @@ public class UserServiceImpl implements UserService{
         return roles;
     }
 
-  public  Page<User> convertListToPage(List<User> list, Pageable pageable) {
+  public  Page<UserDTO> convertListToPage(List<UserDTO> list, Pageable pageable) {
     if (list == null || list.isEmpty()) {
       return new PageImpl<>(List.of(), pageable, 0);
     }
@@ -142,7 +164,7 @@ public class UserServiceImpl implements UserService{
       return new PageImpl<>(List.of(), pageable, list.size());
     }
 
-    List<User> subList = list.subList(start, end);
+    List<UserDTO> subList = list.subList(start, end);
     return new PageImpl<>(subList, pageable, list.size());
   }
 

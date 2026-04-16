@@ -1,11 +1,11 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.BaseProductInfo;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetail;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BasicProductInfoDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProductImage;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.Brand;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBaseProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class BaseProductController {
 
 
   @GetMapping("")
-  public List<BaseProductInfo> findAll(){
+  public List<BasicProductInfoDTO> findAll(){
     return  this.baseProductService.findAllProductsCommerce();
   }
 
@@ -35,7 +35,7 @@ public class BaseProductController {
   }
 
   @GetMapping("/{base_product_id}")
-  public ProductDetail findById(@PathVariable Long base_product_id){
+  public ProductDetailDTO findById(@PathVariable Long base_product_id){
     return  this.baseProductService.getProductDetail(base_product_id);
   }
 
@@ -62,21 +62,23 @@ public class BaseProductController {
 
   //METODOS DE FILTRADO
 
+  //no usado
   @PostMapping("/filter/brand/{brand_id}/page/{page}")
-  public Page<BaseProduct> filterByBrand(@PathVariable Long brand_id,@PathVariable Integer page,@RequestBody List<Category> categoryList ){
+  public Page<BasicProductInfoDTO> filterByBrand(@PathVariable Long brand_id, @PathVariable Integer page, @RequestBody List<Category> categoryList ){
     Pageable pageable = PageRequest.of(page, 4);
     return  this.baseProductService.filterByBrand(brand_id, pageable, categoryList);
   }
 
-
+  //usado actualizado
   @PostMapping("/filter/category_list/page/{page}")
-  public Page<BaseProduct> filterByCategoryList(@RequestBody List<Category> categoryList,@PathVariable Integer page){
+  public Page<BasicProductInfoDTO> filterByCategoryList(@RequestBody List<Long> categoriesIds, @PathVariable Integer page){
     Pageable pageable = PageRequest.of(page, 4);
-    return this.baseProductService.filterByCategoryList(categoryList, pageable);
+    return this.baseProductService.filterByCategoryList(categoriesIds, pageable);
   }
 
+  //usado actualizado
   @PostMapping("/filter/brand/get_list")
-  public List<Brand> getBrandList(@RequestBody List<Category> categoryList){
-    return  this.baseProductService.getBrandList(categoryList);
+  public List<BrandDTO> getBrandList(@RequestBody List<Long> categoriesIds){
+    return  this.baseProductService.getBrandList(categoriesIds);
   }
 }

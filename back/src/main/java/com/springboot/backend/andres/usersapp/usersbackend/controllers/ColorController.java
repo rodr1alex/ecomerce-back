@@ -1,6 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ColorDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Color;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +22,8 @@ public class ColorController {
   }
 
   @GetMapping()
-  private List<Color> findAll(){
-    return this.colorService.findAll();
+  private List<ColorDTO> findAll(){
+    return this.colorService.findAll().stream().map(GeneralMapper::mapColorToColorDTO).toList();
   }
 
   @GetMapping("/{color_id}")

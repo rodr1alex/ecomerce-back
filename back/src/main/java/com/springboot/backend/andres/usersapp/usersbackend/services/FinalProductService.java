@@ -1,5 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.FinalProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.OrderedProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductReturned;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.*;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IFinalProductRepository;
@@ -72,29 +75,38 @@ public class FinalProductService implements IFinalProductService{
   }
 
   @Override
-  public List<FinalProduct> verifyInventory(List<OrderedProduct> orderedProductList) {
-    List<FinalProduct> insuficientStockList = new ArrayList<>();
-    for (OrderedProduct orderedProduct: orderedProductList){
-      FinalProduct finalProductDB = this.findById(orderedProduct.getFinalProduct().getFinal_product_id());
-      if(finalProductDB.getStock() < orderedProduct.getQuantity()){
-        insuficientStockList.add(finalProductDB);
+  public List<FinalProductDTO> verifyInventory(List<OrderedProductDTO> orderedProductList) {
+    List<FinalProductDTO> insuficientStockList = new ArrayList<>();
+    for (OrderedProductDTO orderedProductDTO: orderedProductList){
+      FinalProduct finalProductDB = this.findById(orderedProductDTO.getFinal_product_id());
+      if(finalProductDB.getStock() < orderedProductDTO.getQuantity()){
+        FinalProductDTO finalProductDTO = new FinalProductDTO();
+
+        finalProductDTO.setFinal_product_id(finalProductDB.getFinal_product_id());
+        finalProductDTO.setFinal_price(finalProductDB.getFinal_price());
+        finalProductDTO.setColor(finalProductDB.getColorVariantProduct().getColor().getName());
+        finalProductDTO.setSize(finalProductDB.getSize().getName());
+        finalProductDTO.setBrand(finalProductDB.getColorVariantProduct().getBaseProduct().getBrand().getName());
+        finalProductDTO.setName(finalProductDB.getColorVariantProduct().getBaseProduct().getName());
+
+        insuficientStockList.add(finalProductDTO);
       }
     }
     return insuficientStockList;
   }
 
   @Override
-  public void modifyInventory(List<OrderedProduct> orderedProductList) {
-    for (OrderedProduct orderedProduct: orderedProductList){
-      FinalProduct finalProductDB = this.findById(orderedProduct.getFinalProduct().getFinal_product_id());
-        finalProductDB.setStock(finalProductDB.getStock() + orderedProduct.getQuantity()); //trabaja con diferencial standart
+  public void modifyInventory(List<ProductReturned> productReturneds) {
+    for (ProductReturned productReturned: productReturneds){
+      FinalProduct finalProductDB = this.findById(productReturned.getFinal_product_id());
+        finalProductDB.setStock(finalProductDB.getStock() + productReturned.getQuantityToReturn()); //trabaja con diferencial standart
       this.finalProductRepository.save(finalProductDB);
     }
   }
 
   @Override
-  public Page<FinalProduct> filter(Pageable pageable, Long brand_id, Long color_id, Long size_id, List<Category> categoryList) {
-    List<FinalProduct> finalProductListFiltred = this.baseProductService.filterByBrandAndCategoryListAndColorAndSize(brand_id, color_id, size_id, categoryList);
+  public Page<FinalProduct> filter(Pageable pageable, Long brand_id, Long color_id, Long size_id, List<Long> categories) {
+    List<FinalProduct> finalProductListFiltred = this.baseProductService.filterByBrandAndCategoryListAndColorAndSize(brand_id, color_id, size_id, categories);
     return this.convertListToPage(finalProductListFiltred, pageable);
   }
 

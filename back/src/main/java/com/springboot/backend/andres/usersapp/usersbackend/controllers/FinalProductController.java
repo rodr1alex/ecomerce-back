@@ -1,12 +1,16 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.AdminFinalProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.FilterAdminProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.FinalProduct;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IFinalProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,10 +33,16 @@ public class FinalProductController {
     return  this.finalProductService.findAll(pageable);
   }
 
-  @PostMapping("/filter/{brand_id}/{color_id}/{size_id}/{pageSize}/{page}")
-  public Page<FinalProduct> filter(@PathVariable Long brand_id,@PathVariable Long color_id,@PathVariable Long size_id,@RequestBody List<Category> categoryList,@PathVariable Integer page,@PathVariable Integer pageSize){
-    Pageable pageable = PageRequest.of(page, pageSize);
-    return this.finalProductService.filter(pageable, brand_id, color_id, size_id, categoryList);
+//  @PostMapping("/filter/{brand_id}/{color_id}/{size_id}/{pageSize}/{page}")
+//  public Page<AdminFinalProductDTO> filter(@PathVariable Long brand_id, @PathVariable Long color_id, @PathVariable Long size_id, @RequestBody List<Category> categoryList, @PathVariable Integer page, @PathVariable Integer pageSize){
+//    Pageable pageable = PageRequest.of(page, pageSize);
+//    //return this.finalProductService.filter(pageable, brand_id, color_id, size_id, categoryList).map(ProductMapper::mapFinalProductToAdminFinalProductDTO);
+//  }
+
+  @PostMapping("/filter")
+  public ResponseEntity<Page<AdminFinalProductDTO>> filter(@RequestBody FilterAdminProduct filters) {
+    Pageable pageable = PageRequest.of(filters.getPage(), filters.getPageSize());
+    return ResponseEntity.ok(this.finalProductService.filter(pageable, filters.getBrand_id(), filters.getColor_id(), filters.getSize_id(), filters.getCategories()).map(ProductMapper::mapFinalProductToAdminFinalProductDTO));
   }
 
 

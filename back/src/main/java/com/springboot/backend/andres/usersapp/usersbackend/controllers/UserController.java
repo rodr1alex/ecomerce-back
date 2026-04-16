@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserFilterDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Role;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.UserMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBaseProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,8 +46,8 @@ public class UserController {
     private IBaseProductRepository baseProductRepository;
 
     @GetMapping
-    public List<User> list() {
-        return service.findAll();
+    public List<UserDTO> list() {
+        return service.findAll().stream().map(UserMapper::mapUserToUserDTO).toList();
     }
 
     @GetMapping("/page/{page_size}/{page}")
@@ -53,52 +56,53 @@ public class UserController {
         return service.findAll(pageable);
     }
 
-    @PostMapping("/filter/{page_size}/{page}")
-    public Page<User> filter(@PathVariable Integer page_size, @PathVariable Integer page, @RequestBody Role role){
-        Pageable pageable = PageRequest.of(page, page_size);
-        return  this.service.filter(pageable, role);
+    @PostMapping("/filter")
+    public Page<UserDTO> filter( @RequestBody UserFilterDTO userFilter){
+        return  this.service.filter(userFilter);
     }
 
+    //actualizado
     @GetMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Optional<User> userOptional = service.findById(id);
         if (userOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userOptional.orElseThrow());
+            return ResponseEntity.status(HttpStatus.OK).body(UserMapper.mapUserToUserDTO(userOptional.get()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap("error", "el usuario no se encontro por el id:" + id));
     }
 
+    //actualizado
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.mapUserToUserDTO(service.save(user)));
     }
 
-
-
+    //actualizado
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody UserDTO user, BindingResult result, @PathVariable Long id) {
 
         if (result.hasErrors()) {
             return validation(result);
         }
 
-        Optional<User> userOptional = service.update(user, id);
+        Optional<UserDTO> userOptional = service.update(user, id);
 
         if (userOptional.isPresent()) {
-            return ResponseEntity.ok(userOptional.orElseThrow());
+            return ResponseEntity.ok(userOptional.get());
         }
         return ResponseEntity.notFound().build();
     }
 
+    //actualizado
   @PutMapping("/update_password/{id}")
   public ResponseEntity<?> updatePassword(@RequestBody User user, @PathVariable Long id) {
     Optional<User> userOptional = service.updatePassword(user, id);
     if (userOptional.isPresent()) {
-      return ResponseEntity.ok(userOptional.orElseThrow());
+      return ResponseEntity.ok(UserMapper.mapUserToUserDTO(userOptional.orElseThrow()));
     }
     return ResponseEntity.notFound().build();
   }

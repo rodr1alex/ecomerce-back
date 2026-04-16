@@ -1,5 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CartDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.OrderedProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductReturned;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.FinalProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
@@ -31,7 +34,9 @@ public class CartService implements ICartService{
   @Override
   public Cart createCart(Long user_id) {
     Cart newCart = new Cart();
+    List<OrderedProduct> orderedProductList = new ArrayList<>();
     newCart.setUser(this.userService.findById(user_id).get());
+    newCart.setOrderedProductList(orderedProductList);
     return this.cartRepository.save(newCart);
   }
 
@@ -51,9 +56,9 @@ public class CartService implements ICartService{
   }
 
   @Override
-  public Cart addProduct(OrderedProduct orderedProduct, Long cart_id) {
+  public Cart addProduct(OrderedProductDTO orderedProductDTO, Long cart_id) {
     Cart cartDB = this.cartRepository.findById(cart_id).get();
-    OrderedProduct orderedProductDB = this.orderedProductService.createOrderedProduct(orderedProduct, cart_id);
+    OrderedProduct orderedProductDB = this.orderedProductService.createOrderedProduct(orderedProductDTO, cart_id);
     List<OrderedProduct> orderedProductList = cartDB.getOrderedProductList();
     orderedProductList.add(orderedProductDB);
     cartDB.setOrderedProductList(orderedProductList);
@@ -146,11 +151,23 @@ public class CartService implements ICartService{
   }
 
   @Override
-  public Integer modifyCart(Long cart_id, List<OrderedProduct> orderedProductList){
+  public Integer modifyCart(Long cart_id, List<ProductReturned> productReturneds){
     Cart cartDB = this.cartRepository.findById(cart_id).get();
-    for(int i = 0 ; i < orderedProductList.size(); i++){
-      cartDB.getOrderedProductList().get(i).setQuantity(orderedProductList.get(i).getQuantity());
-    }
+//    for(int i = 0 ; i < productReturneds.size(); i++){
+//      cartDB.getOrderedProductList().get(i).setQuantity(productReturneds.get(i).getQuantityToReturn());
+//    }
+
+    productReturneds.forEach(productReturned -> {
+      cartDB.getOrderedProductList().forEach(orderedProduct -> {
+        if(Objects.equals(orderedProduct.getFinalProduct().getFinal_product_id(), productReturned.getFinal_product_id())){
+          orderedProduct.setQuantity(orderedProduct.getQuantity() - productReturned.getQuantityToReturn());
+        }
+      });
+    });
+
+
+
+
     cartDB.setTotal(this.calculateTotal(cartDB.getOrderedProductList()));
     cartDB.setItems(this.calculateTotalItems(cartDB.getOrderedProductList()));
     this.cartRepository.save(cartDB);

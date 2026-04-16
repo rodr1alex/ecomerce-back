@@ -1,7 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CartDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.CartMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +28,14 @@ public class CartController {
   }
 
   @GetMapping("")
-  public List<Cart> findAll(){
-    return this.cartService.findAll();
+  public List<CartDTO> findAll(){
+    return this.cartService.findAll().stream().map(CartMapper::mapCartToCartDTO).toList();
   }
 
   @PutMapping("/update/add_product/{cart_id}")
   public Cart addProduct(@RequestBody OrderedProduct orderedProduct,@PathVariable Long cart_id){
-    return this.cartService.addProduct(orderedProduct, cart_id);
+    //return this.cartService.addProduct(orderedProduct, cart_id);
+    return  new Cart(); //deje de wear
   }
 
   @PutMapping("/update/remove_product/{cart_id}/{final_product_id}")

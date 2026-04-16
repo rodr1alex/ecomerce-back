@@ -1,10 +1,14 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.DirectionDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Direction;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.User;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.DirectionMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IDirectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DirectionService implements IDirectionService{
@@ -12,6 +16,13 @@ public class DirectionService implements IDirectionService{
   private IDirectionRepository directionRepository;
   @Autowired
   private UserService userService;
+
+  @Override
+  public List<DirectionDTO> getDirectionsByUser(Long user_id) {
+    List<Direction> directions = this.userService.findById(user_id).get().getDirectionList();
+
+    return DirectionMapper.mapDirectionsToDirectiosDTO(directions);
+  }
 
   @Override
   public Direction createDirection(Direction newDirection, Long id) {

@@ -1,5 +1,8 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.FinalProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.OrderedProductDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductReturned;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.FinalProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
@@ -13,7 +16,7 @@ public interface IFinalProductService {
   public Page<FinalProduct> findAll(Pageable pageable);
   public FinalProduct findById(Long final_product_id);
   public FinalProduct update(FinalProduct finalProduct, Long final_product_id);
-  public List<FinalProduct> verifyInventory(List<OrderedProduct> orderedProductList);
-  public void modifyInventory(List<OrderedProduct> orderedProductList);
-  public Page<FinalProduct> filter(Pageable pageable, Long brand_id, Long color_id, Long size_id, List<Category> categoryList);
+  public List<FinalProductDTO> verifyInventory(List<OrderedProductDTO> orderedProductList);
+  public void modifyInventory(List<ProductReturned> productReturneds);
+  public Page<FinalProduct> filter(Pageable pageable, Long brand_id, Long color_id, Long size_id, List<Long> categories);
 }
