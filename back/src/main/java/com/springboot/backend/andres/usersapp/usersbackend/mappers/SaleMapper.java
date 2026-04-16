@@ -47,6 +47,12 @@ public class SaleMapper {
 
   public static SaleStatusDTO mapSaleStatusToSaleStatusDTO(SaleStatus saleStatus){
     SaleStatusDTO saleStatusDTO = new SaleStatusDTO();
+    if(saleStatus == null) {
+      saleStatusDTO.setStatus_id(1L);
+      saleStatusDTO.setName("Completed");
+      saleStatusDTO.setDescription("Sale completed");
+      return  saleStatusDTO;
+    }
     saleStatusDTO.setStatus_id(saleStatus.getStatus_id());
     saleStatusDTO.setName(saleStatus.getName());
     saleStatusDTO.setDescription(saleStatus.getDescription());
