@@ -11,6 +11,46 @@ import java.util.stream.Collectors;
 
 public class ProductMapper {
 
+  public static CreateBaseProductDTO mapBaseProductToCreateBaseProductDTO(BaseProduct baseProduct) {
+    CreateBaseProductDTO dto = new CreateBaseProductDTO();
+
+    dto.setName(baseProduct.getName());
+    dto.setBase_price(baseProduct.getBase_price());
+    dto.setChars(baseProduct.getChars());
+    dto.setSpecs(baseProduct.getSpecs());
+    dto.setBrand_id(baseProduct.getBrand().getBrand_id());
+
+    dto.setCategories_id(baseProduct.getCategoryList().stream()
+      .map(Category::getCategory_id)
+      .collect(Collectors.toList()));
+
+    dto.setBaseProductImagesURL(baseProduct.getBaseProductImageList().stream()
+      .map(BaseProductImage::getUrl)
+      .collect(Collectors.toList()));
+
+    dto.setColorVariantProductList(baseProduct.getColorVariantProductList().stream()
+      .map(variant -> {
+        CreateColorVariantProductDTO variantDto = new CreateColorVariantProductDTO();
+        variantDto.setColor_id(variant.getColor().getColor_id());
+
+        variantDto.setColorVariantProductImagesURL(variant.getColorVariantProductImageList().stream()
+          .map(ColorVariantProductImage::getUrl)
+          .collect(Collectors.toList()));
+
+        variantDto.setFinalProductList(variant.getFinalProductList().stream()
+          .map(finalProd -> {
+            CreateFinalProductDTO finalDto = new CreateFinalProductDTO();
+            finalDto.setStock(finalProd.getStock());
+            finalDto.setFinal_price(finalProd.getFinal_price());
+            finalDto.setSize_id(finalProd.getSize().getSize_id());
+            return finalDto;
+          }).collect(Collectors.toList()));
+
+        return variantDto;
+      }).collect(Collectors.toList()));
+
+    return dto;
+  }
 
 
   public static OrderedProductDetailDTO mapOrderedProductToOrderedProductDetailDTO(OrderedProduct orderedProduct){
@@ -166,6 +206,7 @@ public class ProductMapper {
     adminFinalProductDTO.setBrand(finalProduct.getColorVariantProduct().getBaseProduct().getBrand().getName());
     adminFinalProductDTO.setName(finalProduct.getColorVariantProduct().getBaseProduct().getName());
     adminFinalProductDTO.setStock(finalProduct.getStock());
+    adminFinalProductDTO.setBase_product_id(finalProduct.getColorVariantProduct().getBaseProduct().getBase_product_id());
 
 
     return adminFinalProductDTO;

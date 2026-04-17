@@ -24,7 +24,7 @@ public interface IBaseProductService {
   //public void associateWithColorVariantProduct(BaseProduct baseProduct, ColorVariantProduct colorVariantProduct);
 
   public  List<BasicProductInfoDTO> findAllProductsCommerce();
-  public ProductDetailDTO getProductDetail(Long id);
+  public BaseProduct getProductDetail(Long id);
 
   public Long createNew(CreateBaseProductDTO createBaseProductDTO);
 }

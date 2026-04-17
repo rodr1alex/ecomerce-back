@@ -281,10 +281,8 @@ public class BaseProductService implements IBaseProductService{
   }
 
   @Override
-  public ProductDetailDTO getProductDetail(Long id) {
-    return baseProductRepository.findById(id)
-      .map(ProductMapper::mapBaseProductToProductDetail) // Use our custom mapper
-      .orElseGet(ProductDetailDTO::new);  // Returns the "Dummy" safe object we created earlier
+  public BaseProduct getProductDetail(Long id) {
+    return baseProductRepository.findById(id).get();
   }
 
 

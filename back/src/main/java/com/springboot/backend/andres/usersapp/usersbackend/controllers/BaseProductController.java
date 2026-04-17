@@ -8,6 +8,7 @@ import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProductImage;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBaseProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,7 +54,12 @@ public class BaseProductController {
 
   @GetMapping("/{base_product_id}")
   public ProductDetailDTO findById(@PathVariable Long base_product_id){
-    return  this.baseProductService.getProductDetail(base_product_id);
+    return ProductMapper.mapBaseProductToProductDetail(this.baseProductService.getProductDetail(base_product_id));
+  }
+
+  @GetMapping("/admin/{base_product_id}")
+  public CreateBaseProductDTO findProductAdminDetailById(@PathVariable Long base_product_id){
+    return  ProductMapper.mapBaseProductToCreateBaseProductDTO(this.baseProductService.getProductDetail(base_product_id));
   }
 
   @GetMapping("/featured_products/page/{page}")

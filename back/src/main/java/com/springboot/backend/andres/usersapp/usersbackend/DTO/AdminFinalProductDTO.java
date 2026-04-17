@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminFinalProductDTO extends FinalProductDTO {
   private Integer stock; // Información confidencial
+  private Long base_product_id;
 }

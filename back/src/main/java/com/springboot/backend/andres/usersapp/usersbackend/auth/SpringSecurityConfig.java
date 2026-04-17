@@ -66,7 +66,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/categories", "/categories/{category_id}", "/brands", "/brands/{brand_id}", "/colors", "/colors/{color_id}",
                   "/sizes", "/sizes/{size_id}", "/final_products/{size}/{page}", "/sales/{pageSize}/{page}",
                    "/sales/{sale_id}"
-                  , "/cart/{cart_id}", "/cart").hasRole("ADMIN")
+                  , "/cart/{cart_id}", "/cart", "/base_products/admin/{base_product_id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/categories/update/{category_id}", "/brands/update/{brand_id}", "/colors/update/{color_id}",
                   "/sizes/update/{size_id}", "/base_products/update/{base_product_id}", "/base_products/update/add_image/{base_product_id}",
                   "/base_products/update/remove_image/{base_product_id}", "/color_variant_products/update/{color_variant_product_id}",
