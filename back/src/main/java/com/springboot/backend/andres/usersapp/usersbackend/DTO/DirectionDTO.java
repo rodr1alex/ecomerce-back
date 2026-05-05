@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class DirectionDTO {
-  private Long direction_id;
+  private Long directionId;
   private String city;
   private String street;
   private String number;

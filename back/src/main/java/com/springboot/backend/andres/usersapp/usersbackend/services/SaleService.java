@@ -43,10 +43,10 @@ public class SaleService implements ISaleService{
     long CREATED_STATUS_ID = 1L;
     Sale sale = new Sale();
     Cart cartDB = this.cartService.createCart(cartDTO);
-    cartDB.getOrderedProductList().forEach(item -> item.setOriginalquantity(item.getQuantity())); //Original quantity
+    cartDB.getOrderedProductList().forEach(item -> item.setOriginalQuantity(item.getQuantity())); //Original quantity
     this.finalProductService.removeFromInventory(cartDTO.getProducts());
     sale.setDate(LocalDateTime.now());
-    sale.setDirection(this.directionRepository.findById(cartDTO.getDirection_id()).get());
+    sale.setDirection(this.directionRepository.findById(cartDTO.getDirectionId()).get());
     sale.setCart(cartDB);
     sale.setStatus(saleStatusRepository.findById(CREATED_STATUS_ID).get());
     Sale saleDB = this.saleRepository.save(sale);
@@ -62,7 +62,7 @@ public class SaleService implements ISaleService{
 
     this.finalProductService.addToInventory(productReturnedList);
     Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartModified = this.cartService.modifyCart(saleDB.getCart().getCart_id(), productReturnedList);
+    Cart cartModified = this.cartService.modifyCart(saleDB.getCart().getId(), productReturnedList);
     Long statusId = Objects.equals(cartModified.getTotal(), 0) ? CANCELED_STATUS_ID : MODIFIED_STATUS_ID;
     saleDB.setStatus(saleStatusRepository.findById(statusId).get());
 
@@ -72,11 +72,11 @@ public class SaleService implements ISaleService{
   @Override
   public Sale cancelSale(Long sale_id) {
     Sale saleDB = this.saleRepository.findById(sale_id).get();
-    Cart cartDB = this.cartService.findById(saleDB.getCart().getCart_id());
+    Cart cartDB = this.cartService.findById(saleDB.getCart().getId());
 
     List<ProductReturned> productReturnedList = cartDB.getOrderedProductList()
       .stream()
-      .map(item -> new ProductReturned(item.getFinalProduct().getFinal_product_id(), item.getQuantity()))
+      .map(item -> new ProductReturned(item.getFinalProduct().getId(), item.getQuantity()))
       .toList();
 
     return modifySale(sale_id, productReturnedList);

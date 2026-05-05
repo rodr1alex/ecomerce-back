@@ -40,7 +40,7 @@ public class CategoryService implements ICategoryService{
   public List<Category> findByList(List<Category> categoryList) {
     List<Category> categoryListDB = new ArrayList<>();
     for(Category category: categoryList){
-      Category categoryDB = this.findById(category.getCategory_id());
+      Category categoryDB = this.findById(category.getId());
       categoryListDB.add(categoryDB);
     }
     return categoryListDB;

@@ -26,13 +26,14 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class BaseProduct {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long base_product_id;
+  @Column(name = "base_product_id")
+  private Long id;
 
   private String name;
 
   private String description; //sacar?
 
-  private Integer base_price;
+  private Integer basePrice;
 
   private String chars;
 

@@ -31,7 +31,7 @@ public class ColorService implements IColorService{
   public Color update(Color color, Long color_id) {
     Color colorDB = this.colorRepository.findById(color_id).get();
     colorDB.setName(color.getName());
-    colorDB.setTailwindclass(color.getTailwindclass());
+    colorDB.setTailwindClass(color.getTailwindClass());
     return this.colorRepository.save(colorDB);
   }
 }

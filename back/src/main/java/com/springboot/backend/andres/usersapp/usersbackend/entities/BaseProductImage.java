@@ -18,7 +18,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class BaseProductImage {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long base_product_image_id;
+  @Column(name = "base_product_image_id")
+  private Long id;
 
   private String url;
 

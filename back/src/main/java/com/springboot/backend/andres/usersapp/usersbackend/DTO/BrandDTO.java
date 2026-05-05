@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class BrandDTO {
-  private Long brand_id;
+  private Long id;
   private String name;
 
-  public BrandDTO(Long brand_id, String name) {
-    this.brand_id = brand_id;
+  public BrandDTO(Long id, String name) {
+    this.id = id;
     this.name = name;
   }
 }

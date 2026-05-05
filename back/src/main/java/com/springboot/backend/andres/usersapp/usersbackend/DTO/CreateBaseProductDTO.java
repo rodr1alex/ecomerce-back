@@ -12,13 +12,13 @@ import java.util.List;
 @Setter
 public class CreateBaseProductDTO {
   private String name;
-  private Integer base_price;
+  private Integer basePrice;
   private String chars;
   private String specs;
-  private Long brand_id;
+  private Long brandId;
   private List<String> baseProductImagesURL;
   private List<CreateColorVariantProductDTO> colorVariantProductList;
-  private List<Long> categories_id;
+  private List<Long> categoriesId;
 
   // Getters y Setters
 }

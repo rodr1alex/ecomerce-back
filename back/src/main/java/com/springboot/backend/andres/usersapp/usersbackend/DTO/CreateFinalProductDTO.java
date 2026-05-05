@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 @Setter
 public class CreateFinalProductDTO {
   private Integer stock;
-  private Integer final_price;
-  private Long size_id;
+  private Integer finalPrice;
+  private Long sizeId;
 
   // Getters y Setters
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class AdminSaleDetailDTO {
-  private Long sale_id;
+  private Long saleId;
   private LocalDateTime date;
   private DirectionDTO direction;
   private SaleStatusDTO saleStatus;

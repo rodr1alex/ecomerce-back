@@ -27,11 +27,11 @@ public class CartService implements ICartService{
   @Override
   public Cart createCart(CartForPaymentDTO cartDTO) {
     Cart newCart = new Cart();
-    newCart.setUser(this.userService.findById(cartDTO.getUser_id()).get());
+    newCart.setUser(this.userService.findById(cartDTO.getUserId()).get());
     Cart cartDB = this.cartRepository.save(newCart);
 
     List<OrderedProduct> orderedProductList = cartDTO.getProducts().stream()
-      .map(orderedProductDTO -> this.orderedProductService.createOrderedProduct(orderedProductDTO, cartDB.getCart_id()))
+      .map(orderedProductDTO -> this.orderedProductService.createOrderedProduct(orderedProductDTO, cartDB.getId()))
       .collect(Collectors.toList());
 
     cartDB.setOrderedProductList(orderedProductList);
@@ -61,7 +61,7 @@ public class CartService implements ICartService{
 
     productReturneds.forEach(productReturned -> {
       cartDB.getOrderedProductList().forEach(orderedProduct -> {
-        if(Objects.equals(orderedProduct.getFinalProduct().getFinal_product_id(), productReturned.getFinal_product_id())){
+        if(Objects.equals(orderedProduct.getFinalProduct().getId(), productReturned.getFinalProductId())){
           orderedProduct.setQuantity(orderedProduct.getQuantity() - productReturned.getQuantityToReturn());
         }
       });
@@ -78,7 +78,7 @@ public class CartService implements ICartService{
   private Integer calculateTotal(List<OrderedProduct> orderedProductList){
     int total = 0;
     for(OrderedProduct orderedProduct: orderedProductList){
-      total += (orderedProduct.getQuantity() * this.finalProductService.findById(orderedProduct.getFinalProduct().getFinal_product_id()).getFinal_price());
+      total += (orderedProduct.getQuantity() * this.finalProductService.findById(orderedProduct.getFinalProduct().getId()).getFinalPrice());
     }
     return total;
   }

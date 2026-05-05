@@ -19,7 +19,7 @@ public interface ISaleRepository extends JpaRepository<Sale, Long> {
     "LEFT JOIN c.user u " +
     "LEFT JOIN s.status st " +
     "WHERE (:userId IS NULL OR u.id = :userId) " +
-    "AND (:statusId IS NULL OR st.status_id = :statusId) " +
+    "AND (:statusId IS NULL OR st.id = :statusId) " +
     "AND (:startTotal IS NULL OR COALESCE(c.total, 0) >= :startTotal) " +
     "AND (:endTotal IS NULL OR COALESCE(c.total, 0) <= :endTotal) " +
     "AND (:startDate IS NULL OR s.date >= :startDate) " +

@@ -6,9 +6,9 @@ import java.util.List;
 
 @Data
 public class FilterAdminProduct {
-  private Long brand_id;
-  private Long color_id;
-  private Long size_id;
+  private Long brandId;
+  private Long colorId;
+  private Long sizeId;
   private Integer page;
   private Integer pageSize;
   private List<Long> categories;

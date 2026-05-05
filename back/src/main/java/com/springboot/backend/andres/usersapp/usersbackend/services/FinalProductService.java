@@ -32,9 +32,9 @@ public class FinalProductService implements IFinalProductService{
   public List<Long> verifyInventory(List<OrderedProductDTO> orderedProductList) {
     List<Long> final_products_no_stock = new ArrayList<>();
     for (OrderedProductDTO orderedProductDTO: orderedProductList){
-      FinalProduct finalProductDB = this.findById(orderedProductDTO.getFinal_product_id());
+      FinalProduct finalProductDB = this.findById(orderedProductDTO.getFinalProductId());
       if(finalProductDB.getStock() < orderedProductDTO.getQuantity()){
-        final_products_no_stock.add(finalProductDB.getFinal_product_id());
+        final_products_no_stock.add(finalProductDB.getId());
       }
     }
     return final_products_no_stock;
@@ -53,7 +53,7 @@ public class FinalProductService implements IFinalProductService{
   @Override
   public void removeFromInventory(List<OrderedProductDTO> orderedProducts) {
     for(OrderedProductDTO orderedProductDTO:  orderedProducts){
-      FinalProduct finalProductDB = this.findById(orderedProductDTO.getFinal_product_id());
+      FinalProduct finalProductDB = this.findById(orderedProductDTO.getFinalProductId());
       finalProductDB.setStock(finalProductDB.getStock() - orderedProductDTO.getQuantity());
       this.finalProductRepository.save(finalProductDB);
     }
@@ -62,7 +62,7 @@ public class FinalProductService implements IFinalProductService{
   @Override
   public void addToInventory(List<ProductReturned> productReturners) {
     for (ProductReturned productReturned: productReturners){
-      FinalProduct finalProductDB = this.findById(productReturned.getFinal_product_id());
+      FinalProduct finalProductDB = this.findById(productReturned.getFinalProductId());
       finalProductDB.setStock(finalProductDB.getStock() + productReturned.getQuantityToReturn());
       this.finalProductRepository.save(finalProductDB);
     }

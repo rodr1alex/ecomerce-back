@@ -20,13 +20,15 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Color {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long color_id;
+  @Column(name = "color_id")
+  private Long id;
 
   private String name;
 
-  private String tailwindclass;
+  @Column(name = "tailwindclass")
+  private String tailwindClass;
 
-  private String hex_code_color;
+  private String hexCodeColor;
 
   @OneToMany(mappedBy = "color", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<ColorVariantProduct> colorVariantProductList;

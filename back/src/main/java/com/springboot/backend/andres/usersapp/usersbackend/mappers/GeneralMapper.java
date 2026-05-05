@@ -13,21 +13,21 @@ public class GeneralMapper {
 
   public static CategoryDTO mapCategoryToCategoryDTO(Category category){
     CategoryDTO categoryDTO = new CategoryDTO();
-    categoryDTO.setCategory_id(category.getCategory_id());
+    categoryDTO.setCategoryId(category.getId());
     categoryDTO.setName(category.getName());
     return  categoryDTO;
   }
 
   public static BrandDTO mapBrandToBrandDTO(Brand brand){
-    return new BrandDTO(brand.getBrand_id(), brand.getName());
+    return new BrandDTO(brand.getId(), brand.getName());
   }
 
   public static ColorDTO mapColorToColorDTO(Color color){
-    return  new ColorDTO(color.getColor_id(), color.getName(), color.getHex_code_color());
+    return  new ColorDTO(color.getId(), color.getName(), color.getHexCodeColor());
   }
 
   public static SizeDTO mapSizeToSizeDTO(Size size){
-    return new SizeDTO(size.getSize_id(), size.getName());
+    return new SizeDTO(size.getId(), size.getName());
   }
 
 }

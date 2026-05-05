@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class BasicProductFilter {
-  private Long brand_id;
+  private Long brandId;
   private List<Long> categoriesIds;
   private Integer page;
   private Integer pageSize;

@@ -23,7 +23,8 @@ public class ColorVariantProduct {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long color_variant_product_id;
+  @Column(name = "color_variant_product_id")
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "base_product_id")

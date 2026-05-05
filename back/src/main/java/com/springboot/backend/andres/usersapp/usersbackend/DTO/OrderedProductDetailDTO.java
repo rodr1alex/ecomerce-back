@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class OrderedProductDetailDTO {
-  private Long ordered_product_id;
-  private Long final_product_id;
-  private Long base_product_id;
+  private Long orderedProductId;
+  private Long finalProductId;
+  private Long baseProductId;
   private Integer quantity;
   private Integer originalQuantity;
   private String imgUrl;

@@ -19,7 +19,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class ColorVariantProductImage {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long color_variant_product_image_id;
+  @Column(name = "color_variant_product_image_id")
+  private Long id;
 
   private String url;
 

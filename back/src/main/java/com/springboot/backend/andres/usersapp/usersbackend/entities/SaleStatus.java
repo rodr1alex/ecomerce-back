@@ -20,7 +20,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class SaleStatus {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long status_id;
+  @Column(name = "status_id")
+  private Long id;
 
   private String name;
 

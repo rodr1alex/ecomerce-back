@@ -22,11 +22,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class FinalProduct {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long final_product_id;
+  @Column(name = "final_product_id")
+  private Long id;
 
   private Integer stock;
 
-  private Integer final_price;
+  private Integer finalPrice;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "color_variant_product_id")

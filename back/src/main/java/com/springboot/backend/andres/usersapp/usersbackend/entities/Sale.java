@@ -20,7 +20,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Sale {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long sale_id;
+  @Column(name = "sale_id")
+  private Long id;
 
   private LocalDateTime date;
 

@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateColorVariantProductDTO {
-  private Long color_id;
+  private Long colorId;
   private List<String> colorVariantProductImagesURL;
   private List<CreateFinalProductDTO> finalProductList;
 

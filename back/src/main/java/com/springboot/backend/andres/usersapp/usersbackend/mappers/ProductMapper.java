@@ -13,9 +13,9 @@ public class ProductMapper {
 
   public static BasicProductInfoDTO mapBaseProductToBasicProductInfoDTO(BaseProduct baseProduct){
     BasicProductInfoDTO baseProductCommerce = new BasicProductInfoDTO();
-    baseProductCommerce.setBaseProductId(baseProduct.getBase_product_id());
+    baseProductCommerce.setBaseProductId(baseProduct.getId());
     baseProductCommerce.setName(baseProduct.getName());
-    baseProductCommerce.setBasePrice(baseProduct.getBase_price());
+    baseProductCommerce.setBasePrice(baseProduct.getBasePrice());
     baseProductCommerce.setBrand(baseProduct.getBrand().getName());
     List<GenericImage> imageList = new ArrayList<>();
     List<BaseProductImage> baseProductImageList = baseProduct.getBaseProductImageList();
@@ -32,13 +32,13 @@ public class ProductMapper {
     CreateBaseProductDTO dto = new CreateBaseProductDTO();
 
     dto.setName(baseProduct.getName());
-    dto.setBase_price(baseProduct.getBase_price());
+    dto.setBasePrice(baseProduct.getBasePrice());
     dto.setChars(baseProduct.getChars());
     dto.setSpecs(baseProduct.getSpecs());
-    dto.setBrand_id(baseProduct.getBrand().getBrand_id());
+    dto.setBrandId(baseProduct.getBrand().getId());
 
-    dto.setCategories_id(baseProduct.getCategoryList().stream()
-      .map(Category::getCategory_id)
+    dto.setCategoriesId(baseProduct.getCategoryList().stream()
+      .map(Category::getId)
       .collect(Collectors.toList()));
 
     dto.setBaseProductImagesURL(baseProduct.getBaseProductImageList().stream()
@@ -48,7 +48,7 @@ public class ProductMapper {
     dto.setColorVariantProductList(baseProduct.getColorVariantProductList().stream()
       .map(variant -> {
         CreateColorVariantProductDTO variantDto = new CreateColorVariantProductDTO();
-        variantDto.setColor_id(variant.getColor().getColor_id());
+        variantDto.setColorId(variant.getColor().getId());
 
         variantDto.setColorVariantProductImagesURL(variant.getColorVariantProductImageList().stream()
           .map(ColorVariantProductImage::getUrl)
@@ -58,8 +58,8 @@ public class ProductMapper {
           .map(finalProd -> {
             CreateFinalProductDTO finalDto = new CreateFinalProductDTO();
             finalDto.setStock(finalProd.getStock());
-            finalDto.setFinal_price(finalProd.getFinal_price());
-            finalDto.setSize_id(finalProd.getSize().getSize_id());
+            finalDto.setFinalPrice(finalProd.getFinalPrice());
+            finalDto.setSizeId(finalProd.getSize().getId());
             return finalDto;
           }).collect(Collectors.toList()));
 
@@ -73,17 +73,17 @@ public class ProductMapper {
   public static OrderedProductDetailDTO mapOrderedProductToOrderedProductDetailDTO(OrderedProduct orderedProduct){
     OrderedProductDetailDTO orderedProductDetailDTO = new OrderedProductDetailDTO();
 
-    orderedProductDetailDTO.setOrdered_product_id(orderedProduct.getOrdered_product_id());
-    orderedProductDetailDTO.setFinal_product_id(orderedProduct.getFinalProduct().getFinal_product_id());
-    orderedProductDetailDTO.setBase_product_id(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getBase_product_id());
+    orderedProductDetailDTO.setOrderedProductId(orderedProduct.getId());
+    orderedProductDetailDTO.setFinalProductId(orderedProduct.getFinalProduct().getId());
+    orderedProductDetailDTO.setBaseProductId(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getId());
     orderedProductDetailDTO.setQuantity(orderedProduct.getQuantity());
-    orderedProductDetailDTO.setOriginalQuantity(orderedProduct.getOriginalquantity());
+    orderedProductDetailDTO.setOriginalQuantity(orderedProduct.getOriginalQuantity());
     orderedProductDetailDTO.setImgUrl(orderedProduct.getFinalProduct().getImg());
     orderedProductDetailDTO.setBrand(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getBrand().getName());
     orderedProductDetailDTO.setProductName(orderedProduct.getFinalProduct().getColorVariantProduct().getBaseProduct().getName());
     orderedProductDetailDTO.setColor(orderedProduct.getFinalProduct().getColorVariantProduct().getColor().getName());
     orderedProductDetailDTO.setSize(orderedProduct.getFinalProduct().getSize().getName());
-    orderedProductDetailDTO.setPriceAtPurchase(orderedProduct.getPrice_at_purchase());
+    orderedProductDetailDTO.setPriceAtPurchase(orderedProduct.getPriceAtPurchase());
 
     return  orderedProductDetailDTO;
   }
@@ -93,9 +93,9 @@ public class ProductMapper {
     if (baseProduct == null) return new ProductDetailDTO();
 
     ProductDetailDTO productDetail = new ProductDetailDTO();
-    productDetail.setBaseProductId(baseProduct.getBase_product_id());
+    productDetail.setBaseProductId(baseProduct.getId());
     productDetail.setName(baseProduct.getName());
-    productDetail.setBasePrice(baseProduct.getBase_price());
+    productDetail.setBasePrice(baseProduct.getBasePrice());
     productDetail.setBrand(baseProduct.getBrand() != null ? baseProduct.getBrand().getName() : "Desconocido");
     productDetail.setChars(baseProduct.getChars());
     productDetail.setSpecs(baseProduct.getSpecs());
@@ -120,9 +120,9 @@ public class ProductMapper {
     if (baseProduct == null) return new BasicProductInfoDTO();
 
     BasicProductInfoDTO baseProductInfo = new BasicProductInfoDTO();
-    baseProductInfo.setBaseProductId(baseProduct.getBase_product_id());
+    baseProductInfo.setBaseProductId(baseProduct.getId());
     baseProductInfo.setName(baseProduct.getName());
-    baseProductInfo.setBasePrice(baseProduct.getBase_price());
+    baseProductInfo.setBasePrice(baseProduct.getBasePrice());
     baseProductInfo.setBrand(baseProduct.getBrand().getName());
     List<GenericImage> imageList = new ArrayList<>();
     List<BaseProductImage> baseProductImageList = baseProduct.getBaseProductImageList();
@@ -156,17 +156,17 @@ public class ProductMapper {
         SizesColors sizesColor = new SizesColors();
 
         ColorDTO colorDto = new ColorDTO();
-        colorDto.setColor_id(colorVariantProduct.getColor().getColor_id());
+        colorDto.setId(colorVariantProduct.getColor().getId());
         colorDto.setName(colorVariantProduct.getColor().getName());
-        colorDto.setHex_code_color(colorVariantProduct.getColor().getHex_code_color());
+        colorDto.setHexCodeColor(colorVariantProduct.getColor().getHexCodeColor());
         sizesColor.setColor(colorDto);
 
         SizeDTO sizeDto = new SizeDTO();
-        sizeDto.setSize_id(finalProduct.getSize().getSize_id());
+        sizeDto.setId(finalProduct.getSize().getId());
         sizeDto.setName(finalProduct.getSize().getName());
         sizesColor.setSize(sizeDto);
 
-        sizesColor.setFinalProductId(finalProduct.getFinal_product_id());
+        sizesColor.setFinalProductId(finalProduct.getId());
         return sizesColor;
       }).collect(Collectors.toList());
 
@@ -180,9 +180,9 @@ public class ProductMapper {
 
     // Map the color sub-object
     ColorDTO colorDto = new ColorDTO();
-    colorDto.setColor_id(colorVariantProduct.getColor().getColor_id());
+    colorDto.setId(colorVariantProduct.getColor().getId());
     colorDto.setName(colorVariantProduct.getColor().getName());
-    colorDto.setHex_code_color(colorVariantProduct.getColor().getHex_code_color());
+    colorDto.setHexCodeColor(colorVariantProduct.getColor().getHexCodeColor());
     colorVariantInfo.setColor(colorDto);
 
     // Map the nested images using the same logic as the main list
@@ -215,14 +215,14 @@ public class ProductMapper {
   public static AdminFinalProductDTO mapFinalProductToAdminFinalProductDTO(FinalProduct finalProduct) {
     AdminFinalProductDTO adminFinalProductDTO = new AdminFinalProductDTO();
 
-    adminFinalProductDTO.setFinal_product_id(finalProduct.getFinal_product_id());
-    adminFinalProductDTO.setFinal_price(finalProduct.getFinal_price());
+    adminFinalProductDTO.setFinalProductId(finalProduct.getId());
+    adminFinalProductDTO.setFinalPrice(finalProduct.getFinalPrice());
     adminFinalProductDTO.setColor(finalProduct.getColorVariantProduct().getColor().getName());
     adminFinalProductDTO.setSize(finalProduct.getSize().getName());
     adminFinalProductDTO.setBrand(finalProduct.getColorVariantProduct().getBaseProduct().getBrand().getName());
     adminFinalProductDTO.setName(finalProduct.getColorVariantProduct().getBaseProduct().getName());
     adminFinalProductDTO.setStock(finalProduct.getStock());
-    adminFinalProductDTO.setBase_product_id(finalProduct.getColorVariantProduct().getBaseProduct().getBase_product_id());
+    adminFinalProductDTO.setBaseProductId(finalProduct.getColorVariantProduct().getBaseProduct().getId());
 
     return adminFinalProductDTO;
   }

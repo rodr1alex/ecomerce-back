@@ -10,7 +10,7 @@ public class SaleMapper {
   public static AdminSaleBasicInfoDTO mapSaleToAdminSaleBasicInfoDTO(Sale sale){
       AdminSaleBasicInfoDTO saleDTO = new AdminSaleBasicInfoDTO();
 
-      saleDTO.setSale_id(sale.getSale_id());
+      saleDTO.setSaleId(sale.getId());
       saleDTO.setDate(sale.getDate());
       saleDTO.setSaleStatus(mapSaleStatusToSaleStatusDTO(sale.getStatus()));
       saleDTO.setTotal(sale.getCart().getTotal());
@@ -23,7 +23,7 @@ public class SaleMapper {
   public static AdminSaleDetailDTO mapSaleToSaleDetailDTO(Sale sale){
     AdminSaleDetailDTO saleDetailDTO = new AdminSaleDetailDTO();
 
-    saleDetailDTO.setSale_id(sale.getSale_id());
+    saleDetailDTO.setSaleId(sale.getId());
     saleDetailDTO.setDate(sale.getDate());
     saleDetailDTO.setDirection(DirectionMapper.mapDirectionToDirectionDTO(sale.getDirection()));
     saleDetailDTO.setSaleStatus(mapSaleStatusToSaleStatusDTO(sale.getStatus()));
@@ -40,12 +40,12 @@ public class SaleMapper {
   public static SaleStatusDTO mapSaleStatusToSaleStatusDTO(SaleStatus saleStatus){
     SaleStatusDTO saleStatusDTO = new SaleStatusDTO();
     if(saleStatus == null) {
-      saleStatusDTO.setStatus_id(1L);
+      saleStatusDTO.setStatusId(1L);
       saleStatusDTO.setName("Completed");
       saleStatusDTO.setDescription("Sale completed");
       return  saleStatusDTO;
     }
-    saleStatusDTO.setStatus_id(saleStatus.getStatus_id());
+    saleStatusDTO.setStatusId(saleStatus.getId());
     saleStatusDTO.setName(saleStatus.getName());
     saleStatusDTO.setDescription(saleStatus.getDescription());
     return  saleStatusDTO;

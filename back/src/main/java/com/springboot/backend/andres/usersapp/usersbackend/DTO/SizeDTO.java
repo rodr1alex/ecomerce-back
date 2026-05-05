@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 public class SizeDTO {
-  private Long size_id;
+  private Long id;
   private String name;
 
-  public SizeDTO(Long size_id, String name) {
-    this.size_id = size_id;
+  public SizeDTO(Long id, String name) {
+    this.id = id;
     this.name = name;
   }
 

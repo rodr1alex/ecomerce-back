@@ -23,7 +23,7 @@ public class CartMapper {
   public static OrderedProductDTO mapOrderedProductToOrderedProductDTO(OrderedProduct orderedProduct){
     OrderedProductDTO orderedProductDTO = new OrderedProductDTO();
 
-    orderedProductDTO.setFinal_product_id(orderedProduct.getFinalProduct().getFinal_product_id());
+    orderedProductDTO.setFinalProductId(orderedProduct.getFinalProduct().getId());
     orderedProductDTO.setQuantity(orderedProduct.getQuantity());
     return  orderedProductDTO;
   }

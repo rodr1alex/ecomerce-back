@@ -50,12 +50,12 @@ public class SaleController {
 
     Page<Sale> salePage = this.saleService.filter(
       pageable,
-      filters.getUser_id(),
+      filters.getUserId(),
       filters.getStartDate(),
       filters.getEndDate(),
       filters.getStartTotal(),
       filters.getEndTotal(),
-      filters.getSaleStatus_id()
+      filters.getSaleStatusId()
     );
 
     return ResponseEntity.ok(salePage.map(SaleMapper::mapSaleToAdminSaleBasicInfoDTO));
@@ -74,7 +74,7 @@ public class SaleController {
     }
 
     Sale sale = this.saleService.createSale(cart);
-    return ResponseEntity.status(200).body(sale.getSale_id());
+    return ResponseEntity.status(200).body(sale.getId());
   }
 
   //ok

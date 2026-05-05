@@ -7,7 +7,7 @@ public class DirectionMapper {
 
   public static DirectionDTO mapDirectionToDirectionDTO(Direction direction){
     DirectionDTO directionDTO = new DirectionDTO();
-    directionDTO.setDirection_id(direction.getDirection_id());
+    directionDTO.setDirectionId(direction.getId());
     directionDTO.setCity(direction.getCity());
     directionDTO.setStreet(direction.getStreet());
     directionDTO.setNumber(direction.getNumber());

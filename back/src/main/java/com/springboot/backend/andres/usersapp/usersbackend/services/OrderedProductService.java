@@ -19,9 +19,9 @@ public class OrderedProductService implements IOrderedProductService{
   @Override
   public OrderedProduct createOrderedProduct(OrderedProductDTO newOrderedProduct, Long cart_id) {
     OrderedProduct orderedProduct = new OrderedProduct();
-    orderedProduct.setFinalProduct(this.finalProductService.findById(newOrderedProduct.getFinal_product_id()));
+    orderedProduct.setFinalProduct(this.finalProductService.findById(newOrderedProduct.getFinalProductId()));
     orderedProduct.setQuantity(newOrderedProduct.getQuantity());
-    orderedProduct.setPrice_at_purchase(orderedProduct.getFinalProduct().getFinal_price());
+    orderedProduct.setPriceAtPurchase(orderedProduct.getFinalProduct().getFinalPrice());
     orderedProduct.setCart(this.cartRepository.findById(cart_id).get());
     return this.orderedProductRepository.save(orderedProduct);
   }

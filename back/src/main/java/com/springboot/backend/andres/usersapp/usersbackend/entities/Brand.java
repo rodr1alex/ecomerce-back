@@ -22,7 +22,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Brand {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long brand_id;
+  @Column(name = "brand_id")
+  private Long id;
 
   private String name;
 

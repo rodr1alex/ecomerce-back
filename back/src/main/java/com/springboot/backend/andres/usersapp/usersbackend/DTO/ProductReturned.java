@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductReturned {
-  private Long final_product_id;
+  private Long finalProductId;
   private Integer quantityToReturn;
 }

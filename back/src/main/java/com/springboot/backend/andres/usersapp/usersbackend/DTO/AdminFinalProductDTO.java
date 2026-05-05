@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminFinalProductDTO  {
-  private Long final_product_id;
-  private Integer final_price;
+  private Long finalProductId;
+  private Integer finalPrice;
   private String color;
   private String size;
   private String brand;
   private String name;
-  private Long base_product_id;
+  private Long baseProductId;
   private Integer stock; // Información confidencial
 
 }

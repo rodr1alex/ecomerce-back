@@ -49,7 +49,7 @@ public class UserController {
     //ok
     @PostMapping("/filter")
     public Page<UserDTO> filter( @RequestBody UserFilterDTO filters){
-      int size = (filters.getPage_size() != null && filters.getPage_size() > 0) ? filters.getPage_size() : 10;
+      int size = (filters.getPageSize() != null && filters.getPageSize() > 0) ? filters.getPageSize() : 10;
       Pageable pageable = PageRequest.of(filters.getPage(), size);
 
       Page<User> users = service.filter(pageable, filters.getAdmin());

@@ -18,7 +18,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class OrderedProduct {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long ordered_product_id;
+  @Column(name = "ordered_product_id")
+  private Long id;
 
   private Integer quantity;
 
@@ -30,9 +31,10 @@ public class OrderedProduct {
   @JoinColumn(name = "final_product_id")
   private FinalProduct finalProduct;
 
-  private Integer originalquantity;
+  @Column(name = "originalquantity")
+  private Integer originalQuantity;
 
-  private Integer price_at_purchase;
+  private Integer priceAtPurchase;
 
 
 

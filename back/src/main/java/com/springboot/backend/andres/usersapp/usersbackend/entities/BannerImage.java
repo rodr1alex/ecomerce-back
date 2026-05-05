@@ -1,9 +1,6 @@
 package com.springboot.backend.andres.usersapp.usersbackend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class BannerImage {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long banner_image_id;
+  @Column(name = "banner_image_id")
+  private Long id;
   private String url;
   private boolean mobile;
 }

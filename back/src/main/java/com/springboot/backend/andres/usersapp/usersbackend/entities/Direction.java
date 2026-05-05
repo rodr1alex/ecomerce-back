@@ -21,7 +21,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Direction {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long direction_id;
+  @Column(name = "direction_id")
+  private Long id;
 
   private String city;
 

@@ -23,7 +23,7 @@ public class FinalProductController {
   @PostMapping("/filter")
   public ResponseEntity<Page<AdminFinalProductDTO>> filter(@RequestBody FilterAdminProduct filters) {
     Pageable pageable = PageRequest.of(filters.getPage(), filters.getPageSize());
-    return ResponseEntity.ok(this.finalProductService.filter(pageable, filters.getBrand_id(), filters.getColor_id(), filters.getSize_id(), filters.getCategories()).map(ProductMapper::mapFinalProductToAdminFinalProductDTO));
+    return ResponseEntity.ok(this.finalProductService.filter(pageable, filters.getBrandId(), filters.getColorId(), filters.getSizeId(), filters.getCategories()).map(ProductMapper::mapFinalProductToAdminFinalProductDTO));
   }
 
 

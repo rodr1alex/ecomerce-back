@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class CartForPaymentDTO {
-  private Long user_id;
-  private Long direction_id;
+  private Long userId;
+  private Long directionId;
   private List<OrderedProductDTO> products;
 }

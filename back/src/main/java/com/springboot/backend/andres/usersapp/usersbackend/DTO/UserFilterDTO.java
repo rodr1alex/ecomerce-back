@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class UserFilterDTO {
-  private Integer page_size;
+  private Integer pageSize;
   private Integer page;
   private Boolean admin;
 }

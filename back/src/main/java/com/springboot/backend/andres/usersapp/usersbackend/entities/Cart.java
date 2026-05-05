@@ -22,7 +22,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Cart {
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long cart_id;
+  @Column(name = "cart_id")
+  private Long id;
 
   private Integer total;
 

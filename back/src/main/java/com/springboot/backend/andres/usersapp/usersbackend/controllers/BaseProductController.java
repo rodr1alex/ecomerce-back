@@ -62,7 +62,7 @@ public class BaseProductController {
   public Page<BasicProductInfoDTO> filter(@RequestBody BasicProductFilter filter ){
     Pageable pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
     //return ResponseEntity.ok(salePage.map(SaleMapper::mapSaleToAdminSaleBasicInfoDTO));
-    return  this.baseProductService.filter(pageable, filter.getBrand_id(), filter.getCategoriesIds()).map(ProductMapper::mapBaseProductToBasicProductInfoDTO);
+    return  this.baseProductService.filter(pageable, filter.getBrandId(), filter.getCategoriesIds()).map(ProductMapper::mapBaseProductToBasicProductInfoDTO);
   }
 
   //ok

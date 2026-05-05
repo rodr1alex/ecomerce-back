@@ -19,9 +19,9 @@ public interface IBaseProductRepository extends CrudRepository<BaseProduct, Long
     "FROM BaseProduct p " +
     "JOIN p.brand b " +
     "JOIN p.categoryList c " +
-    "WHERE c.category_id IN :categoriesIds " +
-    "GROUP BY b.brand_id, b.name " +
-    "HAVING COUNT(DISTINCT c.category_id) = :size")
+    "WHERE c.id IN :categoriesIds " +
+    "GROUP BY b.id, b.name " +
+    "HAVING COUNT(DISTINCT c.id) = :size")
   List<Brand> findBrandsWithAllCategories(
     @Param("categoriesIds") List<Long> categoriesIds,
     @Param("size") Long size
@@ -31,10 +31,10 @@ public interface IBaseProductRepository extends CrudRepository<BaseProduct, Long
     "FROM BaseProduct p " +
     "JOIN p.categoryList c " +
     "JOIN p.brand b " +
-    "WHERE (:brandId IS NULL OR b.brand_id = :brandId) " +
-    "AND (c.category_id IN :categoriesIds) " +
-    "GROUP BY p.base_product_id " +
-    "HAVING COUNT(DISTINCT c.category_id) = :size")
+    "WHERE (:brandId IS NULL OR b.id = :brandId) " +
+    "AND (c.id IN :categoriesIds) " +
+    "GROUP BY p.id " +
+    "HAVING COUNT(DISTINCT c.id) = :size")
   Page<BaseProduct> findByBrandAndAllCategories(
     @Param("brandId") Long brandId,
     @Param("categoriesIds") List<Long> categoriesIds,
@@ -42,7 +42,7 @@ public interface IBaseProductRepository extends CrudRepository<BaseProduct, Long
     Pageable pageable
   );
 
-  @Query("SELECT p FROM BaseProduct p JOIN p.brand b WHERE b.brand_id = :brandId")
+  @Query("SELECT p FROM BaseProduct p JOIN p.brand b WHERE b.id = :brandId")
   Page<BaseProduct> findByBrandId(@Param("brandId") Long brandId, Pageable pageable);
 
 

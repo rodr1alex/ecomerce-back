@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AdminSaleBasicInfoDTO {
-  private Long sale_id;
+  private Long saleId;
   private LocalDateTime date;
   private Integer total;
   private Integer items;
