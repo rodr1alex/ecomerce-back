@@ -2,20 +2,13 @@ package com.springboot.backend.andres.usersapp.usersbackend.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.UserFilterDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Direction;
-import com.springboot.backend.andres.usersapp.usersbackend.mappers.UserMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IDirectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Role;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.User;
 import com.springboot.backend.andres.usersapp.usersbackend.models.IUser;
-import com.springboot.backend.andres.usersapp.usersbackend.models.UserRequest;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.RoleRepository;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.UserRepository;
 
@@ -53,32 +45,10 @@ public class UserServiceImpl implements UserService{
         return this.repository.findAll(pageable);
     }
 
-  @Override
-  public Page<UserDTO> filter(UserFilterDTO userFilter) {
-      // Pageable pageable, Role role
-
-    Pageable pageable = PageRequest.of(userFilter.getPage(), userFilter.getPage_size());
-    List<User> userListDB = (List<User>) this.repository.findAll();
-    List<User> filtredUserList = new ArrayList<>();
-
-    if(userFilter.getAdmin() == null){
-      return this.convertListToPage(userListDB.stream()
-        .map(UserMapper::mapUserToUserDTO).toList(), pageable);
+    @Override
+    public Page<User> filter(Pageable pageable, Boolean admin) {
+      return repository.filterByRole(admin, pageable);
     }
-
-    if(userFilter.getAdmin()){
-      filtredUserList = userListDB.stream()
-        .filter(userDB -> userDB.getRoles().size() == 2)
-        .collect(Collectors.toList());
-    }else{
-      filtredUserList = userListDB.stream()
-        .filter(userDB -> userDB.getRoles().size() == 1)
-        .collect(Collectors.toList());
-    }
-
-    return this.convertListToPage(filtredUserList.stream()
-      .map(UserMapper::mapUserToUserDTO).toList(), pageable);
-  }
 
   @Transactional(readOnly = true)
     @Override
@@ -105,7 +75,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public Optional<UserDTO> update(UserDTO userDTO, Long id) {
+    public Optional<User> update(UserDTO userDTO, Long id) {
         Optional<User> userOptional = repository.findById(id);
 
         if (userOptional.isPresent()) {
@@ -114,7 +84,7 @@ public class UserServiceImpl implements UserService{
             userDb.setLastname(userDTO.getLastname());
             userDb.setName(userDTO.getName());
             userDb.setUsername(userDTO.getUsername());
-            return Optional.of(UserMapper.mapUserToUserDTO(repository.save(userDb)));
+            return Optional.of(repository.save(userDb));
         }
         return Optional.empty();
     }
@@ -151,22 +121,5 @@ public class UserServiceImpl implements UserService{
         }
         return roles;
     }
-
-  public  Page<UserDTO> convertListToPage(List<UserDTO> list, Pageable pageable) {
-    if (list == null || list.isEmpty()) {
-      return new PageImpl<>(List.of(), pageable, 0);
-    }
-
-    int start = (int) pageable.getOffset();
-    int end = Math.min((start + pageable.getPageSize()), list.size());
-
-    if (start > end) {
-      return new PageImpl<>(List.of(), pageable, list.size());
-    }
-
-    List<UserDTO> subList = list.subList(start, end);
-    return new PageImpl<>(subList, pageable, list.size());
-  }
-
 
 }

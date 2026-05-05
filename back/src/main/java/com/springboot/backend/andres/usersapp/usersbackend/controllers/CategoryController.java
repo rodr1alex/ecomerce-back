@@ -17,21 +17,25 @@ public class CategoryController {
   @Autowired
   private ICategoryService categoryService;
 
+  //try remove
   @PostMapping("/create")
   public Category create(@RequestBody Category category){
     return  this.categoryService.createCategory(category);
   }
 
+  //ok
   @GetMapping()
   public List<CategoryDTO> findAll(){
     return this.categoryService.findAll().stream().map(GeneralMapper::mapCategoryToCategoryDTO).toList();
   }
 
+  //try remove
   @GetMapping("/{category_id}")
   public Category findById(@PathVariable Long category_id){
     return this.categoryService.findById(category_id);
   }
 
+  //try remove
   @PutMapping("/update/{category_id}")
   public Category updateCategory(@RequestBody Category updatedCategory,@PathVariable Long category_id){
     return this.categoryService.updateCategory(updatedCategory, category_id);

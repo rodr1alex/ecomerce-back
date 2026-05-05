@@ -16,21 +16,25 @@ public class BrandController {
   @Autowired
   private IBrandService brandService;
 
+  //try remove
   @PostMapping("/create")
   public Brand createBrand(@RequestBody Brand brand){
     return this.brandService.createBrand(brand);
   }
 
+  //ok
   @GetMapping()
   public List<BrandDTO> findAll(){
     return this.brandService.findAll().stream().map(GeneralMapper::mapBrandToBrandDTO).toList();
   }
 
+  //try remove
   @GetMapping("/{brand_id}")
   public Brand findById(@PathVariable Long brand_id){
     return this.brandService.findById(brand_id);
   }
 
+  //try remove
   @PutMapping("/update/{brand_id}")
   public Brand updateBrand(@RequestBody Brand updatedBrand,@PathVariable Long brand_id){
     return this.brandService.updateBrand(updatedBrand, brand_id);

@@ -11,6 +11,23 @@ import java.util.stream.Collectors;
 
 public class ProductMapper {
 
+  public static BasicProductInfoDTO mapBaseProductToBasicProductInfoDTO(BaseProduct baseProduct){
+    BasicProductInfoDTO baseProductCommerce = new BasicProductInfoDTO();
+    baseProductCommerce.setBaseProductId(baseProduct.getBase_product_id());
+    baseProductCommerce.setName(baseProduct.getName());
+    baseProductCommerce.setBasePrice(baseProduct.getBase_price());
+    baseProductCommerce.setBrand(baseProduct.getBrand().getName());
+    List<GenericImage> imageList = new ArrayList<>();
+    List<BaseProductImage> baseProductImageList = baseProduct.getBaseProductImageList();
+    for(BaseProductImage imageItem: baseProductImageList){
+      GenericImage image = new GenericImage();
+      image.setUrl(imageItem.getUrl());
+      imageList.add(image);
+    }
+    baseProductCommerce.setImageList(imageList);
+    return baseProductCommerce;
+  }
+
   public static CreateBaseProductDTO mapBaseProductToCreateBaseProductDTO(BaseProduct baseProduct) {
     CreateBaseProductDTO dto = new CreateBaseProductDTO();
 
@@ -198,7 +215,6 @@ public class ProductMapper {
   public static AdminFinalProductDTO mapFinalProductToAdminFinalProductDTO(FinalProduct finalProduct) {
     AdminFinalProductDTO adminFinalProductDTO = new AdminFinalProductDTO();
 
-
     adminFinalProductDTO.setFinal_product_id(finalProduct.getFinal_product_id());
     adminFinalProductDTO.setFinal_price(finalProduct.getFinal_price());
     adminFinalProductDTO.setColor(finalProduct.getColorVariantProduct().getColor().getName());
@@ -208,15 +224,9 @@ public class ProductMapper {
     adminFinalProductDTO.setStock(finalProduct.getStock());
     adminFinalProductDTO.setBase_product_id(finalProduct.getColorVariantProduct().getBaseProduct().getBase_product_id());
 
-
     return adminFinalProductDTO;
   }
 }
 
 
-//private Long final_product_id;
-//private Integer final_price;
-//private String color;
-//private String size;
-//private String brand;
-//private String name;
+

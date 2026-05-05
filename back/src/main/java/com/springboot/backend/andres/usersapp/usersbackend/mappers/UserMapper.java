@@ -19,8 +19,7 @@ public class UserMapper {
     userDTO.setEmail(user.getEmail());
     userDTO.setUsername(user.getUsername());
     userDTO.setAdmin(isAdmin);
-    userDTO.setDirectionList(DirectionMapper.mapDirectionsToDirectiosDTO(user.getDirectionList()));
-
+    userDTO.setDirectionList(user.getDirectionList().stream().map(DirectionMapper::mapDirectionToDirectionDTO).toList());
 
     return userDTO;
   }

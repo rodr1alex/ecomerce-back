@@ -1,6 +1,5 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
-import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Brand;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.IBrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import java.util.List;
 public class BrandService implements IBrandService{
   @Autowired
   private IBrandRepository brandRepository;
+
 
   @Override
   public Brand createBrand(Brand brand) {
@@ -35,10 +35,5 @@ public class BrandService implements IBrandService{
     return this.brandRepository.save(brandDB);
   }
 
-  @Override
-  public void associateWithBaseProduct(Brand brand, BaseProduct baseProduct) {
-    List<BaseProduct> baseProductListDB = brand.getBaseProductList();
-    baseProductListDB.add(baseProduct);
-    this.brandRepository.save(brand);
-  }
+
 }

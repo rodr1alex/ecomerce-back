@@ -16,10 +16,10 @@ import com.springboot.backend.andres.usersapp.usersbackend.models.UserRequest;
 public interface UserService {
     List<User> findAll();
     Page<User> findAll(Pageable pageable);
-    Page<UserDTO> filter(UserFilterDTO userFilter);
+    Page<User> filter(Pageable pageable, Boolean admin);
     Optional<User> findById(@NonNull Long id);
     User save(User user);
-    Optional<UserDTO> update(UserDTO user, Long id);
+    Optional<User> update(UserDTO user, Long id);
     Optional<User> updatePassword(User user, Long id);
     void deleteById(Long id);
 }

@@ -5,6 +5,4 @@ import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProdu
 
 public interface IOrderedProductService {
   public OrderedProduct createOrderedProduct(OrderedProductDTO newOrderedProduct, Long cart_id);
-  public void removeOrderedProduct(Long ordered_product_id);
-  public OrderedProduct updateOrderedProduct(OrderedProduct updatedOrderedProduct, Long ordered_product_id);
 }

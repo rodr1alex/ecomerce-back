@@ -8,9 +8,5 @@ import com.springboot.backend.andres.usersapp.usersbackend.entities.ColorVariant
 import java.util.List;
 
 public interface IColorVariantProductImageService {
-  public List<ColorVariantProductImage> createWithList(List<ColorVariantProductImage> colorVariantProductImageList);
-  public void associateWithColorVariantProduct(List<ColorVariantProductImage> colorVariantProductImageList, ColorVariantProduct colorVariantProduct);
   public ColorVariantProductImage create(ColorVariantProductImage colorVariantProductImage);
-  public ColorVariantProductImage createAndAssociate(ColorVariantProductImage colorVariantProductImage, ColorVariantProduct colorVariantProduct);
-  public void deleteById(Long id);
 }

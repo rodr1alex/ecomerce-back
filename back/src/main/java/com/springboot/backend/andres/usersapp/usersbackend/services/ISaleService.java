@@ -1,27 +1,21 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.CartDTO;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CartForPaymentDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductReturned;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.SaleDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.SaleStatusDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Sale;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.SaleStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 public interface ISaleService {
   public Sale findById(Long sale_id);
-  public Page<Sale> findAll(Pageable pageable);
-  public Sale createSale(CartDTO cart);
-  public String modifySale(Long sale_id, List<ProductReturned> productReturneds);
- // public Cart returnProduct(OrderedProduct orderedProduct, Long sale_id);
- // public Cart removeProduct(Long final_product_id, Long sale_id);
-  public String cancelSale(Long sale_id);
-  public Page<Sale> filter(Pageable pageable, Long user_id, Date startDate, Date endDate, Integer startTotal, Integer endTotal, Long status_id);
+  public Sale createSale(CartForPaymentDTO cart);
+  public Sale modifySale(Long sale_id, List<ProductReturned> productReturneds);
+  public Sale cancelSale(Long sale_id);
+  public Page<Sale> filter(Pageable pageable, Long user_id, LocalDateTime startDate, LocalDateTime endDate, Integer startTotal, Integer endTotal, Long status_id);
   public List<SaleStatus> getAllSaleStatus();
 }

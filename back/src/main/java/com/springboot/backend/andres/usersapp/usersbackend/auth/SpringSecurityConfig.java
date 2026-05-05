@@ -46,11 +46,11 @@ public class SpringSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http.authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.GET, "/base_products","/base_products/featured_products/page/{page}","/base_products/{base_product_id}","/banner_images", "/users",
+                .requestMatchers(HttpMethod.GET, "/base_products","/base_products/featured_products","/base_products/{base_product_id}","/banner_images", "/users",
                   "/users/{id}", "/users/baseproducts", "/users/baseproducts/{id}", "/users/page/{page_size}/{page}", "/sales/statuses"
                   ).permitAll()
-                .requestMatchers(HttpMethod.POST, "/users", "/base_products/filter/category_list/page/{page}", "/base_products/filter/brand/{brand_id}/page/{page}",
-                  "/base_products/filter/brand/get_list", "/base_products/create/new").permitAll()
+                .requestMatchers(HttpMethod.POST, "/users/create", "/base_products/filter/category_list/page/{page}", "/base_products/filter/brand/{brand_id}/page/{page}",
+                  "/base_products/filter/brand/get_list", "/base_products/create/new", "/base_products/filter").permitAll()
                 .requestMatchers(HttpMethod.POST, "/users/directions/create/{id}", "/cart/create/{user_id}",
                   "/sales/create").hasAnyRole("USER","ADMIN")
                 .requestMatchers(HttpMethod.GET, "/users/{id}", "/users/directions/getByUser/{user_id}").hasAnyRole("USER", "ADMIN")

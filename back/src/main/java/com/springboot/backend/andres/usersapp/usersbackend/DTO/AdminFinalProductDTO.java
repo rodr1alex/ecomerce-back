@@ -6,10 +6,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminFinalProductDTO extends FinalProductDTO {
-  private Integer stock; // Información confidencial
+public class AdminFinalProductDTO  {
+  private Long final_product_id;
+  private Integer final_price;
+  private String color;
+  private String size;
+  private String brand;
+  private String name;
   private Long base_product_id;
+  private Integer stock; // Información confidencial
+
 }

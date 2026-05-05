@@ -26,17 +26,4 @@ public class OrderedProductService implements IOrderedProductService{
     return this.orderedProductRepository.save(orderedProduct);
   }
 
-  @Override
-  public void removeOrderedProduct(Long ordered_product_id) {
-      this.orderedProductRepository.deleteById(ordered_product_id);
-  }
-
-  @Override
-  public OrderedProduct updateOrderedProduct(OrderedProduct updatedOrderedProduct, Long ordered_product_id) {
-    OrderedProduct orderedProductDB = this.orderedProductRepository.findById(ordered_product_id).get();
-    orderedProductDB.setQuantity(updatedOrderedProduct.getQuantity());
-    return this.orderedProductRepository.save(orderedProductDB);
-  }
-
-
 }

@@ -1,22 +1,18 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.CartForPaymentDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.OrderedProductDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductReturned;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Cart;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.OrderedProduct;
 
 import java.util.List;
 
 public interface ICartService {
-  public Cart createCart(Long user_id);
+  public Cart createCart(CartForPaymentDTO cartDTO);
   public Cart saveCart(Cart cart);
   public Cart findById(Long cart_id);
   public List<Cart> findAll();
-  public Integer modifyCart(Long cart_id, List<ProductReturned> productReturneds);
-  public Cart addProduct(OrderedProductDTO orderedProduct, Long cart_id);
-  public Cart removeProduct(Long final_product_id, Long cart_id);
-  public Cart UpdateProductQuantity(OrderedProduct orderedProduct, Long cart_id);
-  public Cart cleanCart(Long cart_id);
-  public Cart findBySaleId(Long sale_id);
-  public OrderedProduct findOrderedProduct(Long final_product_id, Long cart_id);
+  public Cart modifyCart(Long cart_id, List<ProductReturned> productReturneds);
+
+
 }

@@ -1,13 +1,9 @@
 package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 
 
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.BasicProductInfoDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.CreateBaseProductDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.DTO.ProductDetailDTO;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProduct;
-import com.springboot.backend.andres.usersapp.usersbackend.entities.BaseProductImage;
+import com.springboot.backend.andres.usersapp.usersbackend.DTO.*;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
+import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBaseProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +25,19 @@ public class BaseProductController {
   @Autowired
   private IBaseProductService baseProductService;
 
-
-  @GetMapping("")
+  //ok
+  @GetMapping("/featured_products")
   public List<BasicProductInfoDTO> findAll(){
-    return  this.baseProductService.findAllProductsCommerce();
+    return this.baseProductService.findAllProductsCommerce()
+      .stream()
+      .map(ProductMapper::mapBaseProductToBasicProductInfoDTO).toList();
   }
 
-//  @PostMapping("/create")
-//  public BaseProduct create(@RequestBody BaseProduct newBaseProduct){
-//    return this.baseProductService.create(newBaseProduct);
-//  }
-
+  //ok
   @PostMapping("/create")
   public ResponseEntity<?> createNew(@RequestBody CreateBaseProductDTO createBaseProductDTO) {
     Long baseProductId = this.baseProductService.createNew(createBaseProductDTO);
 
-    // Creamos un mapa para devolver un JSON limpio: { "id": X, "message": "..." }
     Map<String, Object> response = new HashMap<>();
     response.put("id", baseProductId);
     response.put("message", "Producto creado exitosamente");
@@ -52,56 +45,29 @@ public class BaseProductController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
+  //ok
   @GetMapping("/{base_product_id}")
   public ProductDetailDTO findById(@PathVariable Long base_product_id){
     return ProductMapper.mapBaseProductToProductDetail(this.baseProductService.getProductDetail(base_product_id));
   }
 
+  //ok
   @GetMapping("/admin/{base_product_id}")
   public CreateBaseProductDTO findProductAdminDetailById(@PathVariable Long base_product_id){
     return  ProductMapper.mapBaseProductToCreateBaseProductDTO(this.baseProductService.getProductDetail(base_product_id));
   }
 
-  @GetMapping("/featured_products/page/{page}")
-  public Page<BaseProduct> getFeaturedProducts(@PathVariable Integer page){
-    Pageable pageable = PageRequest.of(page, 40);
-    return  this.baseProductService.getFeaturedProducts(pageable);
+  //nuevo
+  @PostMapping("/filter")
+  public Page<BasicProductInfoDTO> filter(@RequestBody BasicProductFilter filter ){
+    Pageable pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
+    //return ResponseEntity.ok(salePage.map(SaleMapper::mapSaleToAdminSaleBasicInfoDTO));
+    return  this.baseProductService.filter(pageable, filter.getBrand_id(), filter.getCategoriesIds()).map(ProductMapper::mapBaseProductToBasicProductInfoDTO);
   }
 
-  @PutMapping("/update/{base_product_id}")
-  public BaseProduct update(@RequestBody BaseProduct baseProduct,@PathVariable Long base_product_id){
-    return this.baseProductService.update(baseProduct, base_product_id);
-  }
-
-  @PutMapping("/update/add_image/{base_product_id}")
-  public BaseProduct addImage(@RequestBody BaseProductImage baseProductImage,@PathVariable Long base_product_id){
-    return this.baseProductService.addImage(baseProductImage, base_product_id);
-  }
-
-  @PutMapping("/update/remove_image/{base_product_id}")
-  public BaseProduct removeImage(@RequestBody BaseProductImage baseProductImage,@PathVariable Long base_product_id){
-    return this.baseProductService.removeImage(baseProductImage, base_product_id);
-  }
-
-  //METODOS DE FILTRADO
-
-  //no usado
-  @PostMapping("/filter/brand/{brand_id}/page/{page}")
-  public Page<BasicProductInfoDTO> filterByBrand(@PathVariable Long brand_id, @PathVariable Integer page, @RequestBody List<Category> categoryList ){
-    Pageable pageable = PageRequest.of(page, 4);
-    return  this.baseProductService.filterByBrand(brand_id, pageable, categoryList);
-  }
-
-  //usado actualizado
-  @PostMapping("/filter/category_list/page/{page}")
-  public Page<BasicProductInfoDTO> filterByCategoryList(@RequestBody List<Long> categoriesIds, @PathVariable Integer page){
-    Pageable pageable = PageRequest.of(page, 4);
-    return this.baseProductService.filterByCategoryList(categoriesIds, pageable);
-  }
-
-  //usado actualizado
+  //ok
   @PostMapping("/filter/brand/get_list")
   public List<BrandDTO> getBrandList(@RequestBody List<Long> categoriesIds){
-    return  this.baseProductService.getBrandList(categoriesIds);
+    return  this.baseProductService.getBrandList(categoriesIds).stream().map(GeneralMapper::mapBrandToBrandDTO).toList();
   }
 }

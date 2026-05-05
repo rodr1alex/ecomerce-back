@@ -17,6 +17,7 @@ public class BannerImageController {
   @Autowired
   private IBannerImageService bannerImageService;
 
+  //ok
   @GetMapping("")
   public List<BannerImage> findAll(){
     return this.bannerImageService.getAll();

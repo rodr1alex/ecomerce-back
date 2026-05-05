@@ -16,21 +16,25 @@ public class DirectionController {
   @Autowired
   private IDirectionService directionService;
 
+  //ok
   @GetMapping("/getByUser/{user_id}")
   private List<DirectionDTO> getDirectionsByUser(@PathVariable Long user_id){
-    return  this.directionService.getDirectionsByUser(user_id);
+    return  this.directionService.getDirectionsByUser(user_id).stream().map(DirectionMapper::mapDirectionToDirectionDTO).toList();
   }
 
+  //ok
   @PostMapping("/create/{id}")
   private DirectionDTO createDirection(@RequestBody Direction newDirection, @PathVariable Long id){
-    return  DirectionMapper.mapDirectionToDirectioDTO(this.directionService.createDirection(newDirection, id));
+    return  DirectionMapper.mapDirectionToDirectionDTO(this.directionService.createDirection(newDirection, id));
   }
 
+  //ok
   @PutMapping("/update/{direction_id}")
   private DirectionDTO updateDirection(@RequestBody Direction updatedDirection,@PathVariable Long direction_id){
-    return DirectionMapper.mapDirectionToDirectioDTO(this.directionService.updateDirection(updatedDirection, direction_id));
+    return DirectionMapper.mapDirectionToDirectionDTO(this.directionService.updateDirection(updatedDirection, direction_id));
   }
 
+  //ok
   @DeleteMapping("/delete/{direction_id}")
   private void deleteDirection(@PathVariable Long direction_id){
     this.directionService.deleteDirection(direction_id);

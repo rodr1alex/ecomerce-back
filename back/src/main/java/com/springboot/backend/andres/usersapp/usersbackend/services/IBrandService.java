@@ -10,5 +10,4 @@ public interface IBrandService {
   public List<Brand> findAll();
   public Brand findById(Long brand_id);
   public Brand updateBrand(Brand brand, Long brand_id);
-  public void associateWithBaseProduct(Brand brand, BaseProduct baseProduct);
 }

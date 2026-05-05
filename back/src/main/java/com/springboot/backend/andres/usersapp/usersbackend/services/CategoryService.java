@@ -1,6 +1,5 @@
 package com.springboot.backend.andres.usersapp.usersbackend.services;
 
-
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
 import com.springboot.backend.andres.usersapp.usersbackend.repositories.ICategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
