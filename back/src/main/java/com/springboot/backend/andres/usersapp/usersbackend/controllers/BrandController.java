@@ -4,7 +4,10 @@ import com.springboot.backend.andres.usersapp.usersbackend.DTO.BrandDTO;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.Brand;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBrandService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,25 +21,25 @@ public class BrandController {
 
   //try remove
   @PostMapping("/create")
-  public Brand createBrand(@RequestBody Brand brand){
-    return this.brandService.createBrand(brand);
+  public ResponseEntity<Brand> createBrand(@Valid @RequestBody Brand brand){
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.brandService.createBrand(brand));
   }
 
   //ok
   @GetMapping()
-  public List<BrandDTO> findAll(){
-    return this.brandService.findAll().stream().map(GeneralMapper::mapBrandToBrandDTO).toList();
+  public ResponseEntity<List<BrandDTO>> findAll(){
+    return ResponseEntity.ok(this.brandService.findAll().stream().map(GeneralMapper::mapBrandToBrandDTO).toList());
   }
 
   //try remove
   @GetMapping("/{brand_id}")
-  public Brand findById(@PathVariable Long brand_id){
-    return this.brandService.findById(brand_id);
+  public ResponseEntity<Brand> findById(@PathVariable Long brand_id){
+    return ResponseEntity.ok(this.brandService.findById(brand_id));
   }
 
   //try remove
   @PutMapping("/update/{brand_id}")
-  public Brand updateBrand(@RequestBody Brand updatedBrand,@PathVariable Long brand_id){
-    return this.brandService.updateBrand(updatedBrand, brand_id);
+  public ResponseEntity<Brand> updateBrand(@Valid @RequestBody Brand updatedBrand,@PathVariable Long brand_id){
+    return ResponseEntity.ok(this.brandService.updateBrand(updatedBrand, brand_id));
   }
 }

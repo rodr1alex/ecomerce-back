@@ -3,6 +3,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,13 @@ public class Direction {
   @Column(name = "direction_id")
   private Long id;
 
+  @NotBlank
   private String city;
 
+  @NotBlank
   private String street;
 
+  @NotBlank
   private String number;
 
   @ManyToOne(fetch = FetchType.LAZY)

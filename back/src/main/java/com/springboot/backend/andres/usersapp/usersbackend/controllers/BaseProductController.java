@@ -6,6 +6,7 @@ import com.springboot.backend.andres.usersapp.usersbackend.entities.Category;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.GeneralMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.ProductMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBaseProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +28,15 @@ public class BaseProductController {
 
   //ok
   @GetMapping("/featured_products")
-  public List<BasicProductInfoDTO> findAll(){
-    return this.baseProductService.findAllProductsCommerce()
+  public ResponseEntity<List<BasicProductInfoDTO>> findAll(){
+    return ResponseEntity.ok(this.baseProductService.findAllProductsCommerce()
       .stream()
-      .map(ProductMapper::mapBaseProductToBasicProductInfoDTO).toList();
+      .map(ProductMapper::mapBaseProductToBasicProductInfoDTO).toList());
   }
 
   //ok
   @PostMapping("/create")
-  public ResponseEntity<?> createNew(@RequestBody CreateBaseProductDTO createBaseProductDTO) {
+  public ResponseEntity<?> createNew(@Valid @RequestBody CreateBaseProductDTO createBaseProductDTO) {
     Long baseProductId = this.baseProductService.createNew(createBaseProductDTO);
 
     Map<String, Object> response = new HashMap<>();
@@ -47,27 +48,29 @@ public class BaseProductController {
 
   //ok
   @GetMapping("/{base_product_id}")
-  public ProductDetailDTO findById(@PathVariable Long base_product_id){
-    return ProductMapper.mapBaseProductToProductDetail(this.baseProductService.getProductDetail(base_product_id));
+  public ResponseEntity<ProductDetailDTO> findById(@PathVariable Long base_product_id){
+    return ResponseEntity.ok(ProductMapper.mapBaseProductToProductDetail(this.baseProductService.getProductDetail(base_product_id)));
   }
 
   //ok
   @GetMapping("/admin/{base_product_id}")
-  public CreateBaseProductDTO findProductAdminDetailById(@PathVariable Long base_product_id){
-    return  ProductMapper.mapBaseProductToCreateBaseProductDTO(this.baseProductService.getProductDetail(base_product_id));
+  public ResponseEntity<CreateBaseProductDTO> findProductAdminDetailById(@PathVariable Long base_product_id){
+    return ResponseEntity.ok(ProductMapper.mapBaseProductToCreateBaseProductDTO(this.baseProductService.getProductDetail(base_product_id)));
   }
 
   //nuevo
   @PostMapping("/filter")
-  public Page<BasicProductInfoDTO> filter(@RequestBody BasicProductFilter filter ){
+  public ResponseEntity<Page<BasicProductInfoDTO>> filter(@Valid @RequestBody BasicProductFilter filter ){
+    if (filter.getPage() == null || filter.getPageSize() == null || filter.getPageSize() <= 0) {
+      throw new IllegalArgumentException("page y pageSize son requeridos y pageSize debe ser mayor a 0");
+    }
     Pageable pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
-    //return ResponseEntity.ok(salePage.map(SaleMapper::mapSaleToAdminSaleBasicInfoDTO));
-    return  this.baseProductService.filter(pageable, filter.getBrandId(), filter.getCategoriesIds()).map(ProductMapper::mapBaseProductToBasicProductInfoDTO);
+    return ResponseEntity.ok(this.baseProductService.filter(pageable, filter.getBrandId(), filter.getCategoriesIds()).map(ProductMapper::mapBaseProductToBasicProductInfoDTO));
   }
 
   //ok
   @PostMapping("/filter/brand/get_list")
-  public List<BrandDTO> getBrandList(@RequestBody List<Long> categoriesIds){
-    return  this.baseProductService.getBrandList(categoriesIds).stream().map(GeneralMapper::mapBrandToBrandDTO).toList();
+  public ResponseEntity<List<BrandDTO>> getBrandList(@RequestBody List<Long> categoriesIds){
+    return ResponseEntity.ok(this.baseProductService.getBrandList(categoriesIds).stream().map(GeneralMapper::mapBrandToBrandDTO).toList());
   }
 }

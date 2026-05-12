@@ -5,6 +5,7 @@ import com.springboot.backend.andres.usersapp.usersbackend.entities.Sale;
 import com.springboot.backend.andres.usersapp.usersbackend.mappers.SaleMapper;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IFinalProductService;
 import com.springboot.backend.andres.usersapp.usersbackend.services.ISaleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,20 +32,23 @@ public class SaleController {
 
   //ok
   @GetMapping("/{sale_id}")
-  public AdminSaleDetailDTO findById(@PathVariable Long sale_id){
-    return SaleMapper.mapSaleToSaleDetailDTO(this.saleService.findById(sale_id));
+  public ResponseEntity<AdminSaleDetailDTO> findById(@PathVariable Long sale_id){
+    return ResponseEntity.ok(SaleMapper.mapSaleToSaleDetailDTO(this.saleService.findById(sale_id)));
   }
 
   //ok
   @GetMapping("/statuses")
-  public List<SaleStatusDTO> getSaleStatuses(){
-    return saleService.getAllSaleStatus().stream().map(SaleMapper::mapSaleStatusToSaleStatusDTO).toList();
+  public ResponseEntity<List<SaleStatusDTO>> getSaleStatuses(){
+    return ResponseEntity.ok(saleService.getAllSaleStatus().stream().map(SaleMapper::mapSaleStatusToSaleStatusDTO).toList());
   }
 
   //ok
   @PostMapping("/filter")
-  public ResponseEntity<Page<AdminSaleBasicInfoDTO>> filter(@RequestBody SaleFilterDTO filters) {
+  public ResponseEntity<Page<AdminSaleBasicInfoDTO>> filter(@Valid @RequestBody SaleFilterDTO filters) {
 
+    if (filters.getPage() == null) {
+      throw new IllegalArgumentException("page es requerido");
+    }
     int size = (filters.getPageSize() != null && filters.getPageSize() > 0) ? filters.getPageSize() : 10;
     Pageable pageable = PageRequest.of(filters.getPage(), size);
 
@@ -63,7 +67,7 @@ public class SaleController {
 
   //ok
   @PostMapping("/create")
-  private ResponseEntity<?> createSale(@RequestBody CartForPaymentDTO cart){
+  public ResponseEntity<?> createSale(@Valid @RequestBody CartForPaymentDTO cart){
     List<Long> productsNoStock = this.finalProductService.verifyInventory(cart.getProducts());
 
     Map<String, Object> response = new HashMap<>();
@@ -79,13 +83,13 @@ public class SaleController {
 
   //ok
   @PutMapping("/modify/{sale_id}")
-  private ResponseEntity<?> modify(@PathVariable Long sale_id,@RequestBody List<ProductReturned> orderedProductList){
+    public ResponseEntity<?> modify(@PathVariable Long sale_id,@Valid @RequestBody List<ProductReturned> orderedProductList){
      return ResponseEntity.status(HttpStatus.OK).body(SaleMapper.mapSaleToSaleDetailDTO(this.saleService.modifySale(sale_id, orderedProductList)));
   }
 
   //ok
   @PutMapping("/cancel/{sale_id}")
-  private ResponseEntity<?> cancelSale(@PathVariable Long sale_id){
+  public ResponseEntity<?> cancelSale(@PathVariable Long sale_id){
     return  ResponseEntity.status(HttpStatus.OK).body(SaleMapper.mapSaleToSaleDetailDTO(this.saleService.cancelSale(sale_id)));
   }
 

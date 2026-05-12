@@ -3,6 +3,7 @@ package com.springboot.backend.andres.usersapp.usersbackend.controllers;
 import com.springboot.backend.andres.usersapp.usersbackend.entities.BannerImage;
 import com.springboot.backend.andres.usersapp.usersbackend.services.IBannerImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class BannerImageController {
 
   //ok
   @GetMapping("")
-  public List<BannerImage> findAll(){
-    return this.bannerImageService.getAll();
+  public ResponseEntity<List<BannerImage>> findAll(){
+    return ResponseEntity.ok(this.bannerImageService.getAll());
   }
 }

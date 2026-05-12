@@ -42,19 +42,22 @@ public class UserController {
 
     //ok
     @GetMapping
-    public List<UserDTO> list() {
-        return service.findAll().stream().map(UserMapper::mapUserToUserDTO).toList();
+        public ResponseEntity<List<UserDTO>> list() {
+                return ResponseEntity.ok(service.findAll().stream().map(UserMapper::mapUserToUserDTO).toList());
     }
 
     //ok
     @PostMapping("/filter")
-    public Page<UserDTO> filter( @RequestBody UserFilterDTO filters){
+        public ResponseEntity<Page<UserDTO>> filter(@Valid @RequestBody UserFilterDTO filters){
+      if (filters.getPage() == null) {
+        throw new IllegalArgumentException("page es requerido");
+      }
       int size = (filters.getPageSize() != null && filters.getPageSize() > 0) ? filters.getPageSize() : 10;
       Pageable pageable = PageRequest.of(filters.getPage(), size);
 
       Page<User> users = service.filter(pageable, filters.getAdmin());
 
-      return  users.map(UserMapper::mapUserToUserDTO);
+            return ResponseEntity.ok(users.map(UserMapper::mapUserToUserDTO));
     }
 
     //ok
@@ -95,7 +98,7 @@ public class UserController {
 
     //ok
   @PutMapping("/update_password/{id}")
-  public ResponseEntity<?> updatePassword(@RequestBody User user, @PathVariable Long id) {
+    public ResponseEntity<?> updatePassword(@RequestBody User user, @PathVariable Long id) {
     Optional<User> userOptional = service.updatePassword(user, id);
     if (userOptional.isPresent()) {
       return ResponseEntity.ok(UserMapper.mapUserToUserDTO(userOptional.orElseThrow()));

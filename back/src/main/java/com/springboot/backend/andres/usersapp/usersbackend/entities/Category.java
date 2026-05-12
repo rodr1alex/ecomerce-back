@@ -1,6 +1,7 @@
 package com.springboot.backend.andres.usersapp.usersbackend.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class Category {
   @Column(name = "category_id")
   private Long id;
 
+  @NotBlank
   private String name;
 
   @ManyToMany(mappedBy = "categoryList")
