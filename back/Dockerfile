@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 ARG JAR_FILE=target/users-backend-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} tienda_app.jar
 EXPOSE 8080
